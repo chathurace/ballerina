@@ -115,6 +115,7 @@ import org.ballerinalang.util.exceptions.BLangExceptionHelper;
 import org.ballerinalang.util.exceptions.BLangNullReferenceException;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.exceptions.RuntimeErrors;
+import org.ballerinalang.util.workflow.WorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerinalang.util.Lists;
@@ -762,6 +763,9 @@ public class BLangVM {
                 case InstructionCodes.UNLOCK:
                     InstructionLock instructionUnLock = (InstructionLock) instruction;
                     handleVariableUnlock(instructionUnLock.types, instructionUnLock.varRegs);
+                    break;
+                case InstructionCodes.RECEIVE:
+                    invokeReceive(operands[0], operands[1]);
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -2730,6 +2734,13 @@ public class BLangVM {
             }
         }
         ballerinaTransactionManager.incrementCurrentRetryCount(transactionId);
+    }
+
+    private void invokeReceive(int messageNameOperand, int correlationMapOperand) {
+        String messagename = controlStack.currentFrame.stringRegs[messageNameOperand];
+        BRefType correlationMap = controlStack.currentFrame.refRegs[correlationMapOperand];
+        WorkflowUtils.persistStack(controlStack, messagename, correlationMap, ip);
+        ip = -1;
     }
 
     private void invokeCallableUnit(CallableUnitInfo callableUnitInfo, int[] argRegs, int[] retRegs) {

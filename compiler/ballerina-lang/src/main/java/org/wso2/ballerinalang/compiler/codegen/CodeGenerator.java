@@ -126,6 +126,7 @@ import org.wso2.ballerinalang.compiler.tree.statements.BLangForkJoin;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangIf;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangLock;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangNext;
+import org.wso2.ballerinalang.compiler.tree.statements.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn.BLangWorkerReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangStatement;
@@ -467,7 +468,7 @@ public class CodeGenerator extends BLangNodeVisitor {
 
         for (BLangStatement stmt : blockNode.stmts) {
             if (stmt.getKind() != NodeKind.TRY && stmt.getKind() != NodeKind.CATCH
-                    && stmt.getKind() != NodeKind.IF) {
+                    && stmt.getKind() != NodeKind.IF && stmt.getKind() != NodeKind.RECEIVE) {
                 addLineNumberInfo(stmt.pos);
             }
 
@@ -2494,6 +2495,12 @@ public class CodeGenerator extends BLangNodeVisitor {
     public void visit(BLangThrow throwNode) {
         genNode(throwNode.expr, env);
         emit(InstructionFactory.get(InstructionCodes.THROW, throwNode.expr.regIndex));
+    }
+
+    public void visit(BLangReceive receiveNode) {
+        genNode(receiveNode.messageName, env);
+        genNode(receiveNode.correlationMap, env);
+        emit(InstructionCodes.RECEIVE, receiveNode.messageName.regIndex, receiveNode.correlationMap.regIndex);
     }
 
     public void visit(BLangIf ifNode) {

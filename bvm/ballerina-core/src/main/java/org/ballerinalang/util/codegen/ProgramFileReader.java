@@ -1381,7 +1381,6 @@ public class ProgramFileReader {
                 case InstructionCodes.BCONST_1:
                 case InstructionCodes.RCONST_NULL:
                 case InstructionCodes.GOTO:
-                case InstructionCodes.THROW:
                 case InstructionCodes.ERRSTORE:
                 case InstructionCodes.TR_END:
                 case InstructionCodes.NEWMAP:
@@ -1454,6 +1453,7 @@ public class ProgramFileReader {
                 case InstructionCodes.SNE_NULL:
                 case InstructionCodes.NEWJSON:
                 case InstructionCodes.NEWTABLE:
+                case InstructionCodes.RECEIVE:
                     i = codeStream.readInt();
                     j = codeStream.readInt();
                     packageInfo.addInstruction(InstructionFactory.get(opcode, i, j));

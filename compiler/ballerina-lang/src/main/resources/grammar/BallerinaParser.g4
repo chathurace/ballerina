@@ -67,8 +67,8 @@ functionDefinition
     ;
 
 lambdaFunction
-    :  FUNCTION LEFT_PARENTHESIS parameterList? RIGHT_PARENTHESIS returnParameters? callableUnitBody
-    ;
+         :  FUNCTION LEFT_PARENTHESIS parameterList? RIGHT_PARENTHESIS returnParameters? callableUnitBody
+         ;
 
 callableUnitSignature
     :   Identifier LEFT_PARENTHESIS parameterList? RIGHT_PARENTHESIS returnParameters?
@@ -254,6 +254,7 @@ statement
     |   abortStatement
     |   lockStatement
     |   namespaceDeclarationStatement
+    |   receiveStatement
     ;
 
 variableDefinitionStatement
@@ -377,6 +378,10 @@ finallyClause
 
 throwStatement
     :   THROW expression SEMICOLON
+    ;
+
+receiveStatement
+    : RECEIVE LEFT_PARENTHESIS expression COMMA expression RIGHT_PARENTHESIS SEMICOLON
     ;
 
 returnStatement

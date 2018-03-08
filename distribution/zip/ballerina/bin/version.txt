@@ -1,1 +1,1 @@
-Ballerina version: ${project.version}
+Ballerina version: 0.963

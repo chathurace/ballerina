@@ -76,6 +76,7 @@ import org.wso2.ballerinalang.compiler.tree.statements.BLangForkJoin;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangIf;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangLock;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangNext;
+import org.wso2.ballerinalang.compiler.tree.statements.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangStatement;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangThrow;
@@ -742,6 +743,11 @@ public class SemanticAnalyzer extends BLangNodeVisitor {
                     bLangCatch.param.type);
         }
         analyzeStmt(bLangCatch.body, catchBlockEnv);
+    }
+
+    public void visit(BLangReceive receiveNode) {
+        typeChecker.checkExpr(receiveNode.messageName, env);
+        typeChecker.checkExpr(receiveNode.correlationMap, env);
     }
 
     @Override

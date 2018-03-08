@@ -110,6 +110,7 @@ import org.wso2.ballerinalang.compiler.tree.statements.BLangForkJoin;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangIf;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangLock;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangNext;
+import org.wso2.ballerinalang.compiler.tree.statements.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn.BLangWorkerReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangStatement;
@@ -468,6 +469,13 @@ public class Desugar extends BLangNodeVisitor {
         forkJoin.joinedBody = rewrite(forkJoin.joinedBody);
         forkJoin.timeoutBody = rewrite(forkJoin.timeoutBody);
         result = forkJoin;
+    }
+
+    public void visit(BLangReceive receiveNode) {
+       receiveNode.correlationMap = rewriteExpr(receiveNode.correlationMap);
+       receiveNode.messageName = rewriteExpr(receiveNode.messageName);
+        result = receiveNode;
+        // todo: check for improvements
     }
 
 
