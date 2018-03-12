@@ -1577,6 +1577,7 @@ public class BLangPackageBuilder {
     public void startWorkflowDef(DiagnosticPos pos) {
         BLangWorkflow workflowNode = (BLangWorkflow) TreeBuilder.createWorkflowNode();
         workflowNode.pos = pos;
+        attachAnnotations(workflowNode);
         workflowNodeStack.push(workflowNode);
         invokableNodeStack.push(workflowNode);
     }

@@ -418,7 +418,7 @@ public class CodeAnalyzer extends BLangNodeVisitor {
     }
 
     public void visit(BLangWorkflow workflowNode) {
-        this.visitInvocable(workflowNode);
+         this.visitInvocable(workflowNode);
     }
 
     public void visit(BLangService serviceNode) {

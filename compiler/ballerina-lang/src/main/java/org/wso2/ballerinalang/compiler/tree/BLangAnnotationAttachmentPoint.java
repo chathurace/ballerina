@@ -62,6 +62,7 @@ public class BLangAnnotationAttachmentPoint {
      */
     public enum AttachmentPoint {
         SERVICE("service"),
+        WORKFLOW("workflow"),
         RESOURCE("resource"),
         CONNECTOR("connector"),
         ACTION("action"),

@@ -754,6 +754,13 @@ public class SemanticAnalyzer extends BLangNodeVisitor {
         BSymbol workflowSymbol = workflowNode.symbol;
         SymbolEnv workflowEnv = SymbolEnv.createWorkflowActionSymbolEnv(workflowNode, workflowSymbol.scope, env);
 
+        workflowNode.annAttachments.forEach(a -> {
+            a.attachmentPoint =
+                    new BLangAnnotationAttachmentPoint(BLangAnnotationAttachmentPoint.AttachmentPoint.WORKFLOW,
+                            null);
+            this.analyzeDef(a, workflowEnv);
+        });
+
         workflowNode.params.forEach(p -> this.analyzeDef(p, workflowEnv));
         analyzeStmt(workflowNode.body, workflowEnv);
         this.processWorkers(workflowNode, workflowEnv);
