@@ -144,6 +144,22 @@ public class BLangParserListener extends BallerinaParserBaseListener {
         }
     }
 
+    @Override
+    public void enterWorkflowDefinition(BallerinaParser.WorkflowDefinitionContext ctx) {
+        if (ctx.exception != null) {
+            return;
+        }
+        this.pkgBuilder.startWorkflowDef(getCurrentPos(ctx));
+    }
+
+    @Override
+    public void exitWorkflowDefinition(BallerinaParser.WorkflowDefinitionContext ctx) {
+        if (ctx.exception != null) {
+            return;
+        }
+        this.pkgBuilder.endWorkflowDef(getCurrentPos(ctx), getWS(ctx), ctx.Identifier().getText());
+    }
+
     /**
      * {@inheritDoc}
      */

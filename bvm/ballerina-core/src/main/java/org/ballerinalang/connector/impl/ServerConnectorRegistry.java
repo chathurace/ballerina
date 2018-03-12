@@ -27,6 +27,7 @@ import org.ballerinalang.util.codegen.AnnAttributeKeyValuePair;
 import org.ballerinalang.util.codegen.AnnAttributeValue;
 import org.ballerinalang.util.codegen.ResourceInfo;
 import org.ballerinalang.util.codegen.ServiceInfo;
+import org.ballerinalang.util.codegen.WorkflowInfo;
 import org.ballerinalang.util.codegen.attributes.AnnotationAttributeInfo;
 import org.ballerinalang.util.codegen.attributes.AttributeInfo;
 import org.ballerinalang.util.exceptions.BLangExceptionHelper;
@@ -86,6 +87,12 @@ public class ServerConnectorRegistry {
         }
         Service service = buildService(serviceInfo);
         serverConnectorMap.get(serviceInfo.getProtocolPkgPath()).serviceRegistered(service);
+    }
+
+    public void registerWorkflow(WorkflowInfo workflowInfo) {
+        BWorkflow workflow = new BWorkflow();
+        workflow.setWorkflowInfo(workflowInfo);
+        serverConnectorMap.get("ballerina.net.http").workflowRegistered(workflow);
     }
 
     /**

@@ -18,10 +18,13 @@
 package org.ballerinalang.connector.api;
 
 import org.ballerinalang.connector.impl.BServerConnectorFuture;
+import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.connector.impl.ResourceExecutor;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.runtime.threadpool.BallerinaWorkerThread;
+import org.ballerinalang.runtime.threadpool.BallerinaWorkflowThread;
 import org.ballerinalang.runtime.threadpool.ThreadPoolFactory;
+import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
 
 import java.util.Map;
 
@@ -63,6 +66,13 @@ public class Executor {
         BServerConnectorFuture connectorFuture = new BServerConnectorFuture();
         ThreadPoolFactory.getInstance().getExecutor().
                 execute(new BallerinaWorkerThread(resource, connectorFuture, properties, values));
+        return connectorFuture;
+    }
+
+    public static ConnectorFuture submit(BWorkflow workflow, Map<String, Object> properties, HTTPCarbonMessage httpCarbonMessage, BValue... values) {
+        BServerConnectorFuture connectorFuture = new BServerConnectorFuture();
+        ThreadPoolFactory.getInstance().getExecutor().
+                execute(new BallerinaWorkflowThread(workflow, connectorFuture, properties, values, httpCarbonMessage));
         return connectorFuture;
     }
 

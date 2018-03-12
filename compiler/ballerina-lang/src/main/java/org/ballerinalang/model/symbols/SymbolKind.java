@@ -27,6 +27,7 @@ public enum SymbolKind {
     CONNECTOR,
     ACTION,
     SERVICE,
+    WORKFLOW,
     RESOURCE,
     FUNCTION,
     WORKER,

@@ -177,6 +177,7 @@ public class ProgramFileWriter {
         int flags = 0;
         flags = programFile.isMainEPAvailable() ? flags | ProgramFile.EP_MAIN_FLAG : flags;
         flags = programFile.isServiceEPAvailable() ? flags | ProgramFile.EP_SERVICE_FLAG : flags;
+        flags = programFile.isWorkflowEPAvailable() ? flags | ProgramFile.EP_WORKFLOW_FLAG : flags;
         dataOutStream.writeByte(flags);
     }
 
@@ -215,6 +216,13 @@ public class ProgramFileWriter {
         dataOutStream.writeShort(serviceInfoEntries.length);
         for (ServiceInfo serviceInfo : serviceInfoEntries) {
             writeServiceInfo(dataOutStream, serviceInfo);
+        }
+
+        // Emit workflow info entries
+        WorkflowInfo[] workflowInfoEntries = packageInfo.getWorkflowInfoEntries();
+        dataOutStream.writeShort(workflowInfoEntries.length);
+        for (WorkflowInfo workflowInfo : workflowInfoEntries) {
+            writeWorkflowInfo(dataOutStream, workflowInfo);
         }
 
         // Emit constant info entries
@@ -352,6 +360,34 @@ public class ProgramFileWriter {
 
         // Write attribute info entries
         writeAttributeInfoEntries(dataOutStream, connectorInfo.getAttributeInfoEntries());
+    }
+
+    private static void writeWorkflowInfo(DataOutputStream dataOutStream,
+                                          WorkflowInfo workflowInfo) throws IOException {
+        dataOutStream.writeInt(workflowInfo.nameCPIndex);
+        dataOutStream.writeInt(workflowInfo.signatureCPIndex);
+
+        int[] paramNameCPIndexes = workflowInfo.paramNameCPIndexes;
+        dataOutStream.writeShort(paramNameCPIndexes.length);
+        for (int paramNameCPIndex : paramNameCPIndexes) {
+            dataOutStream.writeInt(paramNameCPIndex);
+        }
+
+        WorkerDataChannelInfo[] workerDataChannelInfos = workflowInfo.getWorkerDataChannelInfo();
+        dataOutStream.writeShort(workerDataChannelInfos.length);
+        for (WorkerDataChannelInfo dataChannelInfo : workerDataChannelInfos) {
+            writeWorkerDataChannelInfo(dataOutStream, dataChannelInfo);
+        }
+
+        WorkerInfo defaultWorker = workflowInfo.defaultWorkerInfo;
+        WorkerInfo[] workerInfoEntries = workflowInfo.getWorkerInfoEntries();
+        dataOutStream.writeShort(workerInfoEntries.length + 1);
+        writeWorkerInfo(dataOutStream, defaultWorker);
+        for (WorkerInfo workerInfo : workerInfoEntries) {
+            writeWorkerInfo(dataOutStream, workerInfo);
+        }
+
+        writeAttributeInfoEntries(dataOutStream, workflowInfo.getAttributeInfoEntries());
     }
 
     private static void writeServiceInfo(DataOutputStream dataOutStream,

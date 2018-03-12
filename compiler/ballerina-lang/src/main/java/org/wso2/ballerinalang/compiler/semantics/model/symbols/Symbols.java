@@ -92,6 +92,16 @@ public class Symbols {
         return typeSymbol;
     }
 
+    public static BInvokableSymbol createWorkflowSymbol(int flags,
+                                                        Name name,
+                                                        PackageID pkgID,
+                                                        BType type,
+                                                        BSymbol owner) {
+        BInvokableSymbol symbol = createInvokableSymbol(SymTag.WORKFLOW, flags, name, pkgID, type, owner);
+        symbol.kind = SymbolKind.WORKFLOW;
+        return symbol;
+    }
+
     public static BTypeSymbol createServiceSymbol(int flags,
                                                   Name name,
                                                   PackageID pkgID,

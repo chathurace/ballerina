@@ -41,6 +41,7 @@ public enum NodeKind {
     RECORD_LITERAL_KEY_VALUE,
     RESOURCE,
     SERVICE,
+    WORKFLOW,
     STRUCT,
     VARIABLE,
     WORKER,

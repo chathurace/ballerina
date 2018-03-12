@@ -58,6 +58,7 @@ import org.wso2.ballerinalang.compiler.tree.BLangStruct;
 import org.wso2.ballerinalang.compiler.tree.BLangTransformer;
 import org.wso2.ballerinalang.compiler.tree.BLangVariable;
 import org.wso2.ballerinalang.compiler.tree.BLangWorker;
+import org.wso2.ballerinalang.compiler.tree.BLangWorkflow;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangAnnotAttachmentAttribute;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangAnnotAttachmentAttributeValue;
@@ -747,6 +748,15 @@ public class SemanticAnalyzer extends BLangNodeVisitor {
         actionNode.params.forEach(p -> this.analyzeDef(p, actionEnv));
         analyzeStmt(actionNode.body, actionEnv);
         this.processWorkers(actionNode, actionEnv);
+    }
+
+    public void visit(BLangWorkflow workflowNode) {
+        BSymbol workflowSymbol = workflowNode.symbol;
+        SymbolEnv workflowEnv = SymbolEnv.createWorkflowActionSymbolEnv(workflowNode, workflowSymbol.scope, env);
+
+        workflowNode.params.forEach(p -> this.analyzeDef(p, workflowEnv));
+        analyzeStmt(workflowNode.body, workflowEnv);
+        this.processWorkers(workflowNode, workflowEnv);
     }
 
     public void visit(BLangService serviceNode) {

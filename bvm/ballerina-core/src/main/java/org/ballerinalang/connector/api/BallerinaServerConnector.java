@@ -17,6 +17,8 @@
 */
 package org.ballerinalang.connector.api;
 
+import org.ballerinalang.connector.impl.BWorkflow;
+
 import java.util.List;
 
 /**
@@ -41,6 +43,8 @@ public interface BallerinaServerConnector {
      * @throws BallerinaConnectorException if an error occurs
      */
     void serviceRegistered(Service service) throws BallerinaConnectorException;
+
+    void workflowRegistered(BWorkflow workflow) throws BallerinaConnectorException;
 
     /**
      * This will fire a deployment complete event so to the server connector implementation.

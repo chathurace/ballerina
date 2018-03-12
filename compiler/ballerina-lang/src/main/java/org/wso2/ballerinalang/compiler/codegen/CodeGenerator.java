@@ -64,6 +64,7 @@ import org.wso2.ballerinalang.compiler.tree.BLangStruct;
 import org.wso2.ballerinalang.compiler.tree.BLangTransformer;
 import org.wso2.ballerinalang.compiler.tree.BLangVariable;
 import org.wso2.ballerinalang.compiler.tree.BLangWorker;
+import org.wso2.ballerinalang.compiler.tree.BLangWorkflow;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS.BLangLocalXMLNS;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS.BLangPackageXMLNS;
@@ -171,6 +172,7 @@ import org.wso2.ballerinalang.programfile.StructInfo;
 import org.wso2.ballerinalang.programfile.TransformerInfo;
 import org.wso2.ballerinalang.programfile.WorkerDataChannelInfo;
 import org.wso2.ballerinalang.programfile.WorkerInfo;
+import org.wso2.ballerinalang.programfile.WorkflowInfo;
 import org.wso2.ballerinalang.programfile.attributes.AnnotationAttributeInfo;
 import org.wso2.ballerinalang.programfile.attributes.AttributeInfo;
 import org.wso2.ballerinalang.programfile.attributes.AttributeInfoPool;
@@ -267,6 +269,7 @@ public class CodeGenerator extends BLangNodeVisitor {
     private CallableUnitInfo currentCallableUnitInfo;
     private LocalVariableAttributeInfo localVarAttrInfo;
     private WorkerInfo currentWorkerInfo;
+    private WorkflowInfo currentWorkflowInfo;
     private ServiceInfo currentServiceInfo;
     private ConnectorInfo currentConnectorInfo;
 
@@ -331,6 +334,10 @@ public class CodeGenerator extends BLangNodeVisitor {
         if (pkgNode.services.size() != 0) {
             programFile.setServiceEPAvailable(true);
         }
+
+        if (pkgNode.workflows.size() != 0) {
+            programFile.setWorkflowEPAvailable(true);
+        }
     }
 
     private static BLangFunction getMainFunction(BLangPackage pkgNode) {
@@ -392,6 +399,7 @@ public class CodeGenerator extends BLangNodeVisitor {
         pkgNode.enums.forEach(this::createEnumInfoEntry);
         pkgNode.connectors.forEach(this::createConnectorInfoEntry);
         pkgNode.functions.forEach(this::createFunctionInfoEntry);
+        pkgNode.workflows.forEach(this::createWorkflowInfoEntry);
         pkgNode.services.forEach(this::createServiceInfoEntry);
         pkgNode.functions.forEach(this::createFunctionInfoEntry);
         pkgNode.transformers.forEach(this::createTransformerInfoEntry);
@@ -419,6 +427,20 @@ public class CodeGenerator extends BLangNodeVisitor {
     public void visit(BLangImportPackage importPkgNode) {
         BPackageSymbol pkgSymbol = importPkgNode.symbol;
         genPackage(pkgSymbol);
+    }
+
+    public void visit(BLangWorkflow workflowNode) {
+        WorkflowInfo workflowInfo = currentPkgInfo.getWorkflowInfo(workflowNode.name.getValue());
+        currentCallableUnitInfo = workflowInfo;
+        int annotationAttribNameIndex = addUTF8CPEntry(currentPkgInfo,
+                AttributeInfo.Kind.ANNOTATIONS_ATTRIBUTE.value());
+        AnnotationAttributeInfo attributeInfo = new AnnotationAttributeInfo(annotationAttribNameIndex);
+        workflowNode.annAttachments.forEach(annt -> visitAnnotationAttachment(annt, attributeInfo));
+        currentCallableUnitInfo.addAttributeInfo(AttributeInfo.Kind.ANNOTATIONS_ATTRIBUTE, attributeInfo);
+
+        SymbolEnv workflowEnv = SymbolEnv
+                .createWorkflowActionSymbolEnv(workflowNode, workflowNode.symbol.scope, this.env);
+        visitInvokableNode(workflowNode, currentCallableUnitInfo, workflowEnv);
     }
 
     public void visit(BLangService serviceNode) {
@@ -1971,6 +1993,22 @@ public class CodeGenerator extends BLangNodeVisitor {
         connectorInfo.actionInfoMap.put(actionNode.name.getValue(), actionInfo);
     }
 
+    private void createWorkflowInfoEntry(BLangWorkflow workflowNode) {
+        BInvokableType workflowType = (BInvokableType) workflowNode.symbol.type;
+        // Add resource name as an UTFCPEntry to the constant pool
+        int workflowNameCPIndex = addUTF8CPEntry(currentPkgInfo, workflowNode.name.value);
+        WorkflowInfo workflowInfo = new WorkflowInfo(currentPackageRefCPIndex, workflowNameCPIndex);
+        workflowInfo.paramTypes = workflowType.paramTypes.toArray(new BType[0]);
+        setParameterNames(workflowNode, workflowInfo);
+        workflowInfo.retParamTypes = new BType[0];
+        workflowInfo.signatureCPIndex = addUTF8CPEntry(currentPkgInfo, generateFunctionSig(workflowInfo.paramTypes, workflowInfo.retParamTypes));
+        // Add worker info
+        int workerNameCPIndex = addUTF8CPEntry(currentPkgInfo, "default");
+        workflowInfo.defaultWorkerInfo = new WorkerInfo(workerNameCPIndex, "default");
+        workflowNode.workers.forEach(worker -> addWorkerInfoEntry(worker, workflowInfo));
+        currentPkgInfo.addWorkflowInfo(workflowNode.name.value, workflowInfo);
+    }
+
     private void createServiceInfoEntry(BLangService serviceNode) {
         // Add service name as an UTFCPEntry to the constant pool
         int serviceNameCPIndex = addUTF8CPEntry(currentPkgInfo, serviceNode.name.value);
@@ -2045,6 +2083,31 @@ public class CodeGenerator extends BLangNodeVisitor {
         lineNumberInfo.setPackageInfo(packageInfo);
         lineNumberInfo.setIp(ip);
         return lineNumberInfo;
+    }
+
+    private void setParameterNames(BLangWorkflow workflowNode, WorkflowInfo workflowInfo) {
+        int paramCount = workflowNode.params.size();
+        workflowInfo.paramNameCPIndexes = new int[paramCount];
+        for (int i = 0; i < paramCount; i++) {
+            BLangVariable paramVar = workflowNode.params.get(i);
+            String paramName = null;
+            boolean isAnnotated = false;
+            for (BLangAnnotationAttachment annotationAttachment : paramVar.annAttachments) {
+                String attachmentName = annotationAttachment.getAnnotationName().getValue();
+                if ("PathParam".equalsIgnoreCase(attachmentName) || "QueryParam".equalsIgnoreCase(attachmentName)) {
+                    //TODO:
+                    //paramName = annotationAttachment.getAttributeNameValuePairs().get("value")
+                    // .getLiteralValue().stringValue();
+                    isAnnotated = true;
+                    break;
+                }
+            }
+            if (!isAnnotated) {
+                paramName = paramVar.name.getValue();
+            }
+            int paramNameCPIndex = addUTF8CPEntry(currentPkgInfo, paramName);
+            workflowInfo.paramNameCPIndexes[i] = paramNameCPIndex;
+        }
     }
 
     private void setParameterNames(BLangResource resourceNode, ResourceInfo resourceInfo) {

@@ -114,6 +114,12 @@ public class SymbolEnv {
         return annotationEnv;
     }
 
+    public static SymbolEnv createWorkflowActionSymbolEnv(BLangInvokableNode node, Scope scope, SymbolEnv env) {
+        SymbolEnv symbolEnv = duplicate(node, scope, env);
+        symbolEnv.enclInvokable = node;
+        return symbolEnv;
+    }
+
     public static SymbolEnv createServiceEnv(BLangService node, Scope scope, SymbolEnv env) {
         SymbolEnv serviceEnv = createPkgLevelSymbolEnv(node, scope, env);
         serviceEnv.enclService = node;

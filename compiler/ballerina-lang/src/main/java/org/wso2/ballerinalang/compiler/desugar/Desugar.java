@@ -49,6 +49,7 @@ import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangTransformer;
 import org.wso2.ballerinalang.compiler.tree.BLangVariable;
 import org.wso2.ballerinalang.compiler.tree.BLangWorker;
+import org.wso2.ballerinalang.compiler.tree.BLangWorkflow;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS.BLangLocalXMLNS;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS.BLangPackageXMLNS;
@@ -189,6 +190,7 @@ public class Desugar extends BLangNodeVisitor {
         pkgNode.globalVars = rewrite(pkgNode.globalVars);
         pkgNode.functions = rewrite(pkgNode.functions);
         pkgNode.connectors = rewrite(pkgNode.connectors);
+        pkgNode.workflows = rewrite(pkgNode.workflows);
         pkgNode.services = rewrite(pkgNode.services);
         pkgNode.initFunction = rewrite(pkgNode.initFunction);
         pkgNode.transformers = rewrite(pkgNode.transformers);
@@ -221,6 +223,13 @@ public class Desugar extends BLangNodeVisitor {
         }
 
         result = funcNode;
+    }
+
+    @Override
+    public void visit(BLangWorkflow workflowNode) {
+        workflowNode.body = rewrite(workflowNode.body);
+        workflowNode.workers = rewrite(workflowNode.workers);
+        result = workflowNode;
     }
 
     @Override

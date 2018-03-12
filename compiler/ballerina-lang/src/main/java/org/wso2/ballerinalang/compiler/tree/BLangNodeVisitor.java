@@ -125,6 +125,10 @@ public abstract class BLangNodeVisitor {
         throw new AssertionError();
     }
 
+    public void visit(BLangWorkflow workflowNode) {
+        throw new AssertionError();
+    }
+
     public void visit(BLangService serviceNode) {
         throw new AssertionError();
     }

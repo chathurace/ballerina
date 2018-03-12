@@ -32,6 +32,7 @@ import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.ballerinalang.util.codegen.ServiceInfo;
 import org.ballerinalang.util.codegen.WorkerInfo;
+import org.ballerinalang.util.codegen.WorkflowInfo;
 import org.ballerinalang.util.debugger.DebugContext;
 import org.ballerinalang.util.debugger.Debugger;
 import org.ballerinalang.util.exceptions.BLangRuntimeException;
@@ -75,6 +76,47 @@ public class BLangProgramRunner {
         }
 
         if (serviceCount == 0) {
+            throw new BallerinaException("no services found in '" + programFile.getProgramFilePath() + "'");
+        }
+    }
+
+    public static void runWorkflow(ProgramFile programFile) {
+        if (!programFile.isWorkflowEPAvailable()) {
+            throw new BallerinaException("No workflows found in '" + programFile.getProgramFilePath() + "'");
+        }
+
+        // Get the workflow package
+        PackageInfo packageInfo = programFile.getEntryPackage();
+        if (packageInfo == null) {
+            throw new BallerinaException("No workflows found in '" + programFile.getProgramFilePath() + "'");
+        }
+
+        // This is required to invoke package/service init functions;
+        Context bContext = new Context(programFile);
+
+        Debugger debugger = new Debugger(programFile);
+        initDebugger(bContext, debugger);
+
+        // Invoke package init function
+        BLangFunctions.invokePackageInitFunction(programFile, packageInfo.getInitFunctionInfo(), bContext);
+
+        int workflowCount = 0;
+        for (WorkflowInfo workflowInfo : packageInfo.getWorkflowInfoEntries()) {
+            // Invoke service init function
+            //TODO check this to pass a Service
+            bContext.setWorkflowInfo(workflowInfo);
+//            BLangFunctions.invokeFunction(programFile, workflowInfo.getInitFunctionInfo(), bContext);
+            if (bContext.getError() != null) {
+                String stackTraceStr = BLangVMErrors.getPrintableStackTrace(bContext.getError());
+                throw new BLangRuntimeException("error: " + stackTraceStr);
+            }
+
+            // Deploy service
+            programFile.getServerConnectorRegistry().registerWorkflow(workflowInfo);
+            workflowCount++;
+        }
+
+        if (workflowCount == 0) {
             throw new BallerinaException("no services found in '" + programFile.getProgramFilePath() + "'");
         }
     }

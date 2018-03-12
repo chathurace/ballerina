@@ -46,6 +46,7 @@ import org.ballerinalang.model.tree.StructNode;
 import org.ballerinalang.model.tree.TransformerNode;
 import org.ballerinalang.model.tree.VariableNode;
 import org.ballerinalang.model.tree.WorkerNode;
+import org.ballerinalang.model.tree.WorkflowNode;
 import org.ballerinalang.model.tree.expressions.AnnotationAttachmentAttributeValueNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinalang.model.tree.expressions.XMLAttributeNode;
@@ -79,6 +80,7 @@ import org.wso2.ballerinalang.compiler.tree.BLangStruct;
 import org.wso2.ballerinalang.compiler.tree.BLangTransformer;
 import org.wso2.ballerinalang.compiler.tree.BLangVariable;
 import org.wso2.ballerinalang.compiler.tree.BLangWorker;
+import org.wso2.ballerinalang.compiler.tree.BLangWorkflow;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangAnnotAttachmentAttribute;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangAnnotAttachmentAttributeValue;
@@ -220,6 +222,8 @@ public class BLangPackageBuilder {
     private Stack<TransactionNode> transactionNodeStack = new Stack<>();
 
     private Stack<ForkJoinNode> forkJoinNodesStack = new Stack<>();
+
+    private Stack<WorkflowNode> workflowNodeStack = new Stack<>();
 
     private Stack<ServiceNode> serviceNodeStack = new Stack<>();
 
@@ -1568,6 +1572,23 @@ public class BLangPackageBuilder {
         exprStmt.addWS(ws);
         exprStmt.expr = (BLangExpression) exprNodeStack.pop();
         addStmtToCurrentBlock(exprStmt);
+    }
+
+    public void startWorkflowDef(DiagnosticPos pos) {
+        BLangWorkflow workflowNode = (BLangWorkflow) TreeBuilder.createWorkflowNode();
+        workflowNode.pos = pos;
+        workflowNodeStack.push(workflowNode);
+        invokableNodeStack.push(workflowNode);
+    }
+
+    public void endWorkflowDef(DiagnosticPos pos, Set<Whitespace> ws, String workflowName) {
+        BLangWorkflow workflowNode = (BLangWorkflow) workflowNodeStack.pop();
+        invokableNodeStack.pop();
+        workflowNode.setName(createIdentifier(workflowName));
+        workflowNode.pos = pos;
+        workflowNode.addWS(ws);
+        varListStack.pop().forEach(workflowNode::addParameter);
+        this.compUnit.addTopLevelNode(workflowNode);
     }
 
     public void startServiceDef(DiagnosticPos pos) {

@@ -19,6 +19,7 @@ package org.ballerinalang.net.http;
 
 import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.ConnectorUtils;
+import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.mime.util.EntityBodyHandler;
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.BType;
@@ -53,6 +54,23 @@ import java.util.Map;
 public class HttpDispatcher {
 
     private static final Logger breLog = LoggerFactory.getLogger(HttpDispatcher.class);
+
+    public static BWorkflow findWorkflow(HTTPServicesRegistry servicesRegistry, HTTPCarbonMessage cMsg) {
+        try {
+            String uriStr = (String) cMsg.getProperty(org.wso2.carbon.messaging.Constants.TO);
+            //replace multiple slashes from single slash if exist in request path to enable
+            // dispatchers when request path contains multiple slashes
+            URI requestUri = URI.create(uriStr.replaceAll("//+", HttpConstants.DEFAULT_BASE_PATH));
+            BWorkflow workflow = servicesRegistry.getWorkflow(requestUri.getPath());
+            cMsg.setProperty(HttpConstants.BASE_PATH, requestUri.getPath());
+            cMsg.setProperty(HttpConstants.QUERY_STR, requestUri.getQuery());
+            //store query params comes with request as it is
+            cMsg.setProperty(HttpConstants.RAW_QUERY_STR, requestUri.getRawQuery());
+            return workflow;
+        } catch (Throwable e) {
+            throw new BallerinaConnectorException(e.getMessage());
+        }
+    }
 
     private static HttpService findService(HTTPServicesRegistry servicesRegistry, HTTPCarbonMessage inboundReqMsg) {
         try {

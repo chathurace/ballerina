@@ -316,6 +316,10 @@ public class ProgramFileReader {
         if ((flags & ProgramFile.EP_SERVICE_FLAG) == ProgramFile.EP_SERVICE_FLAG) {
             programFile.setServiceEPAvailable(true);
         }
+
+        if ((flags & ProgramFile.EP_WORKFLOW_FLAG) == ProgramFile.EP_WORKFLOW_FLAG) {
+            programFile.setWorkflowEPAvailable(true);
+        }
     }
 
     private void readPackageInfo(DataInputStream dataInStream) throws IOException {
@@ -341,6 +345,8 @@ public class ProgramFileReader {
 
         // Read service info entries
         readServiceInfoEntries(dataInStream, packageInfo);
+
+        readWorkflowInfoEntries(dataInStream, packageInfo);
 
         // Resolve user-defined type i.e. structs and connectors
         resolveUserDefinedTypes(packageInfo);
@@ -560,6 +566,54 @@ public class ProgramFileReader {
 
             // Read attributes of the struct info
             readAttributeInfoEntries(dataInStream, packageInfo, connectorInfo);
+        }
+    }
+
+    private void readWorkflowInfoEntries(DataInputStream dataInStream,
+                                         PackageInfo packageInfo) throws IOException {
+        int workflowCount = dataInStream.readShort();
+        for (int i = 0; i < workflowCount; i++) {
+            // Read workflow name cp index
+            int workflowNameCPIndex = dataInStream.readInt();
+            UTF8CPEntry workflowNameUTF8Entry = (UTF8CPEntry) packageInfo.getCPEntry(workflowNameCPIndex);
+
+            WorkflowInfo workflowInfo = new WorkflowInfo(packageInfo.getPkgNameCPIndex(), packageInfo.getPkgPath(),
+                    workflowNameCPIndex, workflowNameUTF8Entry.getValue());
+            workflowInfo.setPackageInfo(packageInfo);
+            packageInfo.addWorkflowInfo(workflowInfo.getName(), workflowInfo);
+
+            // Read action signature
+            int wfSigCPIndex = dataInStream.readInt();
+            workflowInfo.setSignatureCPIndex(wfSigCPIndex);
+            UTF8CPEntry wfSigUTF8Entry = (UTF8CPEntry) packageInfo.getCPEntry(wfSigCPIndex);
+            String wfSig = wfSigUTF8Entry.getValue();
+            workflowInfo.setSignature(wfSig);
+            setCallableUnitSignature(workflowInfo, wfSig, packageInfo);
+
+            // Read parameter names
+            // TODO Find a better alternative. Storing just param names is like a hack.
+            int paramNameCPIndexesCount = dataInStream.readShort();
+            int[] paramNameCPIndexes = new int[paramNameCPIndexesCount];
+            String[] paramNames = new String[paramNameCPIndexesCount];
+            for (int k = 0; k < paramNameCPIndexesCount; k++) {
+                int paramNameCPIndex = dataInStream.readInt();
+                paramNameCPIndexes[k] = paramNameCPIndex;
+                UTF8CPEntry paramNameCPEntry = (UTF8CPEntry) packageInfo.getCPEntry(paramNameCPIndex);
+                paramNames[k] = paramNameCPEntry.getValue();
+            }
+            workflowInfo.setParamNameCPIndexes(paramNameCPIndexes);
+            workflowInfo.setParamNames(paramNames);
+
+            int workerDataChannelsLength = dataInStream.readShort();
+            for (int k = 0; k < workerDataChannelsLength; k++) {
+                readWorkerDataChannelEntries(dataInStream, packageInfo, workflowInfo);
+            }
+
+            // Read workers
+            readWorkerInfoEntries(dataInStream, packageInfo, workflowInfo);
+
+            // Read attributes of the struct info
+            readAttributeInfoEntries(dataInStream, packageInfo, workflowInfo);
         }
     }
 

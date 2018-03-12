@@ -21,6 +21,7 @@ import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.connector.api.ConnectorFutureListener;
 import org.ballerinalang.connector.api.Executor;
+import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.runtime.Constants;
 import org.ballerinalang.util.exceptions.BallerinaException;
@@ -49,6 +50,14 @@ public class BallerinaHTTPConnectorListener implements HttpConnectorListener {
     @Override
     public void onMessage(HTTPCarbonMessage httpCarbonMessage) {
         try {
+            BWorkflow workflow = HttpDispatcher.findWorkflow(httpServicesRegistry, httpCarbonMessage);
+            if (workflow != null) {
+                ConnectorFuture future = Executor.submit(workflow, null, httpCarbonMessage, null);
+                ConnectorFutureListener futureListener = new HttpWorkflowFutureListener(httpCarbonMessage);
+                future.setConnectorFutureListener(futureListener);
+                return;
+            }
+
             HttpResource httpResource;
             if (accessed(httpCarbonMessage)) {
                 httpResource = (HttpResource) httpCarbonMessage.getProperty(HTTP_RESOURCE);

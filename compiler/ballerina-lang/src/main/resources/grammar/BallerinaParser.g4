@@ -37,6 +37,7 @@ orgName
 
 definition
     :   serviceDefinition
+    |   workflowDefinition
     |   functionDefinition
     |   connectorDefinition
     |   structDefinition
@@ -53,6 +54,10 @@ serviceDefinition
 
 serviceBody
     :   LEFT_BRACE endpointDeclaration* variableDefinitionStatement* resourceDefinition* RIGHT_BRACE
+    ;
+
+workflowDefinition
+    :   WORKFLOW Identifier LEFT_PARENTHESIS parameterList RIGHT_PARENTHESIS callableUnitBody
     ;
 
 resourceDefinition
