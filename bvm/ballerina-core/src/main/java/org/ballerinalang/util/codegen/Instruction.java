@@ -33,7 +33,7 @@ public class Instruction {
     int opcode;
     int[] operands;
 
-    Instruction(int opcode, int... operands) {
+     Instruction(int opcode, int... operands) {
         this.opcode = opcode;
         this.operands = operands;
     }
@@ -80,6 +80,35 @@ public class Instruction {
         public String toString() {
             StringJoiner sj = new StringJoiner(" ");
             sj.add(String.valueOf(funcRefCPIndex));
+            sj.add(String.valueOf(argRegs.length));
+            Arrays.stream(argRegs).forEach(i -> sj.add(String.valueOf(i)));
+            sj.add(String.valueOf(retRegs.length));
+            Arrays.stream(retRegs).forEach(i -> sj.add(String.valueOf(i)));
+            return Mnemonics.getMnem(opcode) + " " + sj.toString();
+        }
+    }
+
+    /**
+     * {@code InstructionRECEIVE} represents the RECEIVE instruction in Ballerina bytecode.
+     * <p>
+     * The CALL instruction performs a function invocation in BVM.
+     *
+     * @since 0.95.6
+     */
+    public static class InstructionRECEIVE extends Instruction {
+
+        public int[] argRegs;
+        public int[] retRegs;
+
+        InstructionRECEIVE(int opcode, int[] argRegs, int[] retRegs) {
+            super(opcode);
+            this.argRegs = argRegs;
+            this.retRegs = retRegs;
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner sj = new StringJoiner(" ");
             sj.add(String.valueOf(argRegs.length));
             Arrays.stream(argRegs).forEach(i -> sj.add(String.valueOf(i)));
             sj.add(String.valueOf(retRegs.length));

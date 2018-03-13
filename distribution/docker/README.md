@@ -15,7 +15,7 @@ mvn clean install
 This will create a fat JAR file with the dependencies included, inside the `target` folder.
 
 ## Usage
-Add the `ballerina-container-support-0.963.1-SNAPSHOT.jar` file to `bre/lib/` folder in the Ballerina distribution.
+Add the `ballerina-container-support-0.964.0.jar` file to `bre/lib/` folder in the Ballerina distribution.
 
 ### `ballerina docker` Command Line Usage
 ```
@@ -101,9 +101,9 @@ chmod +r ~/ballerina/packages/mypackage.balx
 
 # Run container with the volume mount
 <<<<<<< HEAD
-docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.963.0
+docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.964.0
 =======
-docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.963.1-SNAPSHOT
+docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.964.0
 >>>>>>> v0.964.0
 ```
 
@@ -114,9 +114,9 @@ cp mysvcpackage.balx ~/ballerina/packages/
 chmod +r ~/ballerina/packages/mysvcpackage.balx
 
 <<<<<<< HEAD
-docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.963.0
+docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.964.0
 =======
-docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.963.1-SNAPSHOT
+docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.964.0
 >>>>>>> v0.964.0
 ```
 ## License

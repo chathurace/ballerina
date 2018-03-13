@@ -1132,6 +1132,18 @@ public class BallerinaParserBaseListener implements BallerinaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterReceiveStatemenReferance(BallerinaParser.ReceiveStatemenReferanceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReceiveStatemenReferance(BallerinaParser.ReceiveStatemenReferanceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterSimpleVariableReference(BallerinaParser.SimpleVariableReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}

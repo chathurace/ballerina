@@ -258,7 +258,6 @@ statement
     |   abortStatement
     |   lockStatement
     |   namespaceDeclarationStatement
-    |   receiveStatement
     ;
 
 variableDefinitionStatement
@@ -383,9 +382,9 @@ finallyClause
 throwStatement
     :   THROW expression SEMICOLON
     ;
-
+//(VAR)? variableReferenceList ASSIGN
 receiveStatement
-    : RECEIVE LEFT_PARENTHESIS expression COMMA expression RIGHT_PARENTHESIS SEMICOLON
+    : RECEIVE LEFT_PARENTHESIS expression COMMA expression RIGHT_PARENTHESIS
     ;
 
 returnStatement
@@ -411,6 +410,7 @@ workerReply
 variableReference
     :   nameReference                                                           # simpleVariableReference
     |   functionInvocation                                                      # functionInvocationReference
+    |   receiveStatement                                                        # receiveStatemenReferance
     |   variableReference index                                                 # mapArrayVariableReference
     |   variableReference field                                                 # fieldVariableReference
     |   variableReference xmlAttrib                                             # xmlAttribVariableReference

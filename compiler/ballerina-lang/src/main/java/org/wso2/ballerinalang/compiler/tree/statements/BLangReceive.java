@@ -18,15 +18,32 @@ package org.wso2.ballerinalang.compiler.tree.statements;
 
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.statements.ReceiveNode;
+import org.wso2.ballerinalang.compiler.semantics.model.symbols.BSymbol;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
+import org.wso2.ballerinalang.compiler.tree.BLangIdentifier;
 import org.wso2.ballerinalang.compiler.tree.BLangNodeVisitor;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangVariableReference;
+import org.wso2.ballerinalang.compiler.util.TypeTags;
+import org.wso2.ballerinalang.programfile.Instruction.RegIndex;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Receive construct for workflow support.
  */
-public class BLangReceive extends BLangStatement implements ReceiveNode {
+public class BLangReceive extends BLangVariableReference implements ReceiveNode {
     public BLangExpression messageName;
     public BLangExpression correlationMap;
+    public BLangIdentifier pkgAlias;
+    public BLangIdentifier name;
+    public List<BLangExpression> argExprs = new ArrayList<>();
+    public BLangVariableReference expr;
+    public List<BType> types = new ArrayList<>(0);
+    public BSymbol symbol;
+    protected RegIndex[] regIndexes;
+    public int returnType = TypeTags.JSON;
 
     public BLangReceive() {}
 
@@ -53,5 +70,14 @@ public class BLangReceive extends BLangStatement implements ReceiveNode {
     @Override
     public void accept(BLangNodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    public RegIndex[] getRegIndexes() {
+        return regIndexes;
+    }
+
+    public void setRegIndexes(RegIndex[] regIndexes) {
+        this.regIndexes = regIndexes;
+        this.regIndex = regIndexes != null && regIndexes.length > 0 ? regIndexes[0] : null;
     }
 }

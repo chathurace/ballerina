@@ -1502,11 +1502,14 @@ public class BLangPackageBuilder {
         receiveNodeStack.push(receiveNode);
     }
 
-    public void addReceiveStatement() {
+    public void addReceiveStatement(DiagnosticPos pos, Set<Whitespace> ws) {
         BLangReceive receiveNode = (BLangReceive) receiveNodeStack.peek();
         receiveNode.correlationMap = (BLangExpression) exprNodeStack.pop();
         receiveNode.messageName = (BLangExpression) exprNodeStack.pop();
-        addStmtToCurrentBlock(receiveNode);
+        receiveNode.pos = pos;
+        receiveNode.addWS(ws);
+
+        addExpressionNode(receiveNode);
     }
 
     public void startIfElseNode(DiagnosticPos pos) {

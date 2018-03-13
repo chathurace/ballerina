@@ -83,6 +83,7 @@ import org.ballerinalang.util.codegen.Instruction.InstructionCALL;
 import org.ballerinalang.util.codegen.Instruction.InstructionFORKJOIN;
 import org.ballerinalang.util.codegen.Instruction.InstructionIteratorNext;
 import org.ballerinalang.util.codegen.Instruction.InstructionLock;
+import org.ballerinalang.util.codegen.Instruction.InstructionRECEIVE;
 import org.ballerinalang.util.codegen.Instruction.InstructionTCALL;
 import org.ballerinalang.util.codegen.Instruction.InstructionVCALL;
 import org.ballerinalang.util.codegen.Instruction.InstructionWRKSendReceive;
@@ -114,10 +115,10 @@ import org.ballerinalang.util.exceptions.BLangExceptionHelper;
 import org.ballerinalang.util.exceptions.BLangNullReferenceException;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.ballerinalang.util.exceptions.RuntimeErrors;
-import org.ballerinalang.util.workflow.WorkflowUtils;
 import org.ballerinalang.util.program.BLangFunctions;
 import org.ballerinalang.util.transactions.LocalTransactionInfo;
 import org.ballerinalang.util.transactions.TransactionConstants;
+import org.ballerinalang.util.workflow.WorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerinalang.util.Lists;
@@ -769,7 +770,8 @@ public class BLangVM {
                     handleVariableUnlock(instructionUnLock.types, instructionUnLock.varRegs);
                     break;
                 case InstructionCodes.RECEIVE:
-                    invokeReceive(operands[0], operands[1]);
+                    InstructionRECEIVE instructionReceive = (InstructionRECEIVE) instruction;
+                    invokeReceive(instructionReceive.argRegs, instructionReceive.retRegs);
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -2793,9 +2795,11 @@ public class BLangVM {
         return BLangFunctions.invokeFunction(context.getProgramFile(), functionInfo, args, newContext);
     }
 
-    private void invokeReceive(int messageNameOperand, int correlationMapOperand) {
-        String messagename = controlStack.currentFrame.stringRegs[messageNameOperand];
-        BRefType correlationMap = controlStack.currentFrame.refRegs[correlationMapOperand];
+    private void invokeReceive(int[] argRegs, int[] retRegs) {
+//        BRefType vars =  controlStack.currentFrame.getRefRegs()[argRegs[1]];
+//        controlStack.currentFrame.refRegs[retRegs[0]] = vars;
+        String messagename = controlStack.currentFrame.getStringRegs()[argRegs[0]];
+        BRefType correlationMap = controlStack.currentFrame.refRegs[argRegs[1]];
         WorkflowUtils.persistStack(controlStack, messagename, correlationMap, ip);
         ip = -1;
     }

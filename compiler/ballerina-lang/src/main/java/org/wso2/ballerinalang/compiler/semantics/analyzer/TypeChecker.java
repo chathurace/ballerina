@@ -822,8 +822,8 @@ public class TypeChecker extends BLangNodeVisitor {
     }
 
     public void visit(BLangReceive bLangReceive) {
-        checkExpr(bLangReceive.correlationMap, env, Lists.of(symTable.intType));
-        checkExpr(bLangReceive.messageName, env, Lists.of(symTable.intType));
+        checkExpr(bLangReceive.correlationMap, env, Lists.of(symTable.jsonType));
+        checkExpr(bLangReceive.messageName, env, Lists.of(symTable.stringType));
         resultTypes = Lists.of(new BArrayType(symTable.anyType));
     }
 
