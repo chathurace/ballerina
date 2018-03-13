@@ -22,16 +22,16 @@ import org.ballerinalang.model.values.BMap;
 
 public class Correlator {
 
-    public void persistState(BMap<String, ?> vars, Context context) {
+    public static void persistState(BMap<String, ?> vars, Context context) {
         ContextStore.storeContext(vars, context);
     }
 
-    public Context correlate(String var, boolean delete) {
+    public static Context correlate(String var, boolean delete) {
         Context context = ContextStore.getContext(var, true);
         return context;
     }
 
-    public Context correlate(BMap<String, ?> vars, boolean delete) {
+    public static Context correlate(BMap<String, ?> vars, boolean delete) {
         Context context = ContextStore.getContext(vars, true);
         return context;
     }

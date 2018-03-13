@@ -47,10 +47,14 @@ public class BallerinaWorkflowThread implements Runnable {
 
     @Override
     public void run() {
+        String correlationHeader = httpCarbonMessage.getHeader("Correlation");
         HttpMessageDataStreamer httpMessageDataStreamer = new HttpMessageDataStreamer(httpCarbonMessage);
         String payload = StringUtils.getStringFromInputStream(httpMessageDataStreamer.getInputStream());
         System.out.println("PAYLOAD: " + payload);
         BJSON value = new BJSON(payload);
-        WorkflowExecutor.execute(workflow, connectorFuture, properties, value);
+        boolean correlated = WorkflowExecutor.correlate(workflow, connectorFuture, properties, correlationHeader);
+        if (!correlated) {
+            WorkflowExecutor.execute(workflow, connectorFuture, properties, value);
+        }
     }
 }

@@ -142,3 +142,8 @@ public native function openSocket (string host, int port, SocketProperties optio
 @Description {value:"Close the socket connection with the remote server"}
 @Param {value:"socket: The client socket connection to be to be closed"}
 public native function <Socket socket> closeSocket ();
+
+@Description {value:"Receives a message to a already started workflow."}
+@Param {value:"messageName: Name of the message to be received."}
+@Return { value:"Payload of the received message"}
+public native function receive (string messageName, map vars) (string);

@@ -156,20 +156,14 @@ public class WorkflowExecutor {
         connectorFuture.notifySuccess();
     }
 
-    public static boolean execute(Resource resource, BServerConnectorFuture connectorFuture,
-                                  Map<String, Object> properties, BValue... values) {
-        if (resource == null) {
-            connectorFuture.notifyFailure(new BallerinaException("trying to execute a null resource"));
+    public static boolean correlate(BWorkflow workflow, BServerConnectorFuture connectorFuture,
+                                  Map<String, Object> properties, String correlationHeader) {
+        if (workflow == null) {
+            connectorFuture.notifyFailure(new BallerinaException("Correlating workflow is null"));
             return false;
         }
 
-//         ((HttpCarbonRequest)((HashMap.Node)((HashMap)((BStruct)values[0]).nativeData).entrySet().toArray()[1]).getValue()).httpRequest.headers().entries().get(3).getValue()
-
-        HttpCarbonRequest request = (HttpCarbonRequest) ((BStruct) values[0]).getNativeData("transport_message");
-        String correlationHeader = request.getHeader("Correlation");
-        System.out.println("Correlating with header: " + correlationHeader);
-
-        Context context = new Correlator().correlate(correlationHeader, true);
+        Context context = Correlator.correlate(correlationHeader, true);
         if (context != null) {
             context.setStartIP((Integer) context.getProperty("ip"));
             BLangVM bLangVM = new BLangVM(context.getProgramFile());
@@ -180,6 +174,7 @@ public class WorkflowExecutor {
                 DebuggerUtil.initDebugContext(context, debugger);
             }
             bLangVM.run(context);
+            connectorFuture.notifySuccess();
             return true;
         }
         return false;
