@@ -74,6 +74,7 @@ import org.wso2.ballerinalang.compiler.tree.BLangStruct;
 import org.wso2.ballerinalang.compiler.tree.BLangTransformer;
 import org.wso2.ballerinalang.compiler.tree.BLangVariable;
 import org.wso2.ballerinalang.compiler.tree.BLangWorker;
+import org.wso2.ballerinalang.compiler.tree.BLangWorkflow;
 import org.wso2.ballerinalang.compiler.tree.BLangXMLNS;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangInvocation;
@@ -202,6 +203,9 @@ public class SymbolEnter extends BLangNodeVisitor {
 
         // Define transformer nodes.
         pkgNode.transformers.forEach(tansformer -> defineNode(tansformer, pkgEnv));
+
+        // Define workflow nodes
+        pkgNode.workflows.forEach(workflow -> defineNode(workflow, pkgEnv));
 
         // Define service and resource nodes.
         pkgNode.services.forEach(service -> defineNode(service, pkgEnv));
@@ -390,6 +394,14 @@ public class SymbolEnter extends BLangNodeVisitor {
                 names.fromIdNode(connectorNode.name), env.enclPkg.symbol.pkgID, null, env.scope.owner);
         connectorNode.symbol = conSymbol;
         defineSymbol(connectorNode.pos, conSymbol);
+    }
+
+    @Override
+    public void visit(BLangWorkflow workflowNode) {
+        BInvokableSymbol workflowSymbol = Symbols.createWorkflowSymbol(Flags.asMask(workflowNode.flagSet),
+                names.fromIdNode(workflowNode.name), env.enclPkg.symbol.pkgID, null, env.scope.owner);
+        SymbolEnv invokableEnv = SymbolEnv.createWorkflowActionSymbolEnv(workflowNode, workflowSymbol.scope, env);
+        defineInvokableSymbol(workflowNode, workflowSymbol, invokableEnv);
     }
 
     @Override
@@ -613,6 +625,9 @@ public class SymbolEnter extends BLangNodeVisitor {
                 break;
             case CONNECTOR:
                 pkgNode.connectors.add((BLangConnector) node);
+                break;
+            case WORKFLOW:
+                pkgNode.workflows.add((BLangWorkflow) node);
                 break;
             case SERVICE:
                 pkgNode.services.add((BLangService) node);

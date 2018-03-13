@@ -23,12 +23,16 @@ import org.ballerinalang.connector.api.AnnAttrValue;
 import org.ballerinalang.connector.api.Annotation;
 import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.Resource;
+import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.net.uri.DispatcherUtil;
 import org.ballerinalang.net.uri.URITemplateException;
 import org.ballerinalang.net.ws.WebSocketServicesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.transport.http.netty.config.ChunkConfig;
+import org.wso2.transport.http.netty.config.KeepAliveConfig;
 import org.wso2.transport.http.netty.config.ListenerConfiguration;
+import org.wso2.transport.http.netty.config.RequestSizeValidationConfig;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -54,6 +58,7 @@ public class HTTPServicesRegistry {
 
     // Outer Map key=interface, Inner Map key=basePath
     private final Map<String, Map<String, HttpService>> servicesInfoMap = new ConcurrentHashMap<>();
+    private final Map<String, BWorkflow> workflowInfoMap = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<String> sortedServiceURIs = new CopyOnWriteArrayList<>();
     private final WebSocketServicesRegistry webSocketServicesRegistry;
 
@@ -72,6 +77,10 @@ public class HTTPServicesRegistry {
         return servicesInfoMap.get(interfaceId).get(basepath);
     }
 
+    public BWorkflow getWorkflow(String basePath) {
+        return workflowInfoMap.get(basePath);
+    }
+
     /**
      * Get ServiceInfo map for given interfaceId.
      *
@@ -80,6 +89,14 @@ public class HTTPServicesRegistry {
      */
     public Map<String, HttpService> getServicesInfoByInterface(String interfaceId) {
         return servicesInfoMap.get(interfaceId);
+    }
+
+    public void registerWorkflow(BWorkflow workflow) {
+        String basePath = workflow.getBasePath();
+        workflowInfoMap.put(basePath, workflow);
+
+        ListenerConfiguration workflowListnerConfig = createWorkflowListnerConfig();
+        HttpConnectionManager.getInstance().createHttpServerConnector(workflowListnerConfig);
     }
 
     /**
@@ -121,6 +138,27 @@ public class HTTPServicesRegistry {
         }
         logger.info("Service deployed : " + service.getName() + " with context " + basePath);
         postProcessService(service);
+    }
+
+    private ListenerConfiguration createWorkflowListnerConfig() {
+        ListenerConfiguration config = new ListenerConfiguration();
+        config.setId("0.0.0.0:9095");
+        config.setHost("0.0.0.0");
+        config.setPort(9095);
+        config.setChunkConfig(ChunkConfig.AUTO);
+        config.setBindOnStartup(false);
+        config.setScheme("https");
+        config.setHttp2(false);
+//        config.setKeyStoreFile("/home/wso2/projects/wso2/ballerina-tools/tools-distribution/modules/ballerina/target/ballerina-0.95.8/bre/security/ballerinaKeystore.p12");
+        config.setKeyStoreFile("../bre/security/ballerinaKeystore.p12");
+        config.setKeyStorePass("ballerina");
+        config.setCertPass("ballerina");
+        config.setSocketIdleTimeout(0);
+        config.setTLSStoreType("PKCS12");
+        config.setKeepAliveConfig(KeepAliveConfig.AUTO);
+        RequestSizeValidationConfig requestConfig = new RequestSizeValidationConfig();
+        config.setRequestSizeValidationConfig(requestConfig);
+        return config;
     }
 
     private String discoverBasePathFrom(HttpService service, Annotation annotation) {

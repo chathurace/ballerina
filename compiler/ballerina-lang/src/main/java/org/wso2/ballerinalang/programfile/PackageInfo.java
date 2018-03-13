@@ -56,6 +56,8 @@ public class PackageInfo implements ConstantPool, AttributeInfoPool {
 
     public Map<String, EnumInfo> enumInfoMap = new HashMap<>();
 
+    public Map<String, WorkflowInfo> workflowInfoMap = new HashMap<>();
+
     public Map<String, ServiceInfo> serviceInfoMap = new HashMap<>();
 
     private Map<String, StructureTypeInfo> structureTypeInfoMap = new HashMap<>();
@@ -147,6 +149,18 @@ public class PackageInfo implements ConstantPool, AttributeInfoPool {
 
     public ConnectorInfo[] getConnectorInfoEntries() {
         return connectorInfoMap.values().toArray(new ConnectorInfo[0]);
+    }
+
+    public WorkflowInfo[] getWorkflowInfoEntries() {
+        return this.workflowInfoMap.values().toArray(new WorkflowInfo[0]);
+    }
+
+    public WorkflowInfo getWorkflowInfo(String workflowName) {
+        return workflowInfoMap.get(workflowName);
+    }
+
+    public void addWorkflowInfo(String workflowName, WorkflowInfo workflowInfo) {
+        workflowInfoMap.put(workflowName, workflowInfo);
     }
 
     public ServiceInfo[] getServiceInfoEntries() {

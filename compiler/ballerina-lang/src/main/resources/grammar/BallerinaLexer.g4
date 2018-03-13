@@ -15,6 +15,7 @@ PUBLIC      : 'public' ;
 PRIVATE      : 'private' ;
 NATIVE      : 'native' ;
 SERVICE     : 'service' ;
+WORKFLOW    : 'workflow';
 RESOURCE    : 'resource' ;
 FUNCTION    : 'function' ;
 CONNECTOR   : 'connector' ;

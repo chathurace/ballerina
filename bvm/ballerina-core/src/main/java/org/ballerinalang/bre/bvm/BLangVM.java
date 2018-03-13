@@ -3199,7 +3199,12 @@ public class BLangVM {
         // Invoke Native function;
         AbstractNativeFunction nativeFunction = functionInfo.getNativeFunction();
         try {
+            context.setProperty("ip", ip);
             nativeFunction.executeNative(context);
+            Object newIP = context.getProperty("new_ip");
+            if (newIP != null) {
+                ip = (int) newIP;
+            }
         } catch (BLangNullReferenceException e) {
             context.setError(BLangVMErrors.createNullRefException(context, ip));
             handleError();

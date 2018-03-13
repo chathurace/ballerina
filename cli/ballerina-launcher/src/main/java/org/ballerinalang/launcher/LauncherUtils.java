@@ -77,7 +77,7 @@ public class LauncherUtils {
         }
 
         // If there is no main or service entry point, throw an error
-        if (!programFile.isMainEPAvailable() && !programFile.isServiceEPAvailable()) {
+        if (!programFile.isMainEPAvailable() && !programFile.isServiceEPAvailable() && !programFile.isWorkflowEPAvailable()) {
             throw new RuntimeException("main function not found in '" + programFile.getProgramFilePath() + "'");
         }
 
@@ -88,13 +88,16 @@ public class LauncherUtils {
             throw new RuntimeException("failed to start ballerina runtime: " + e.getMessage(), e);
         }
 
-        if (runServices || !programFile.isMainEPAvailable()) {
-            if (args.length > 0) {
-                throw LauncherUtils.createUsageException("too many arguments");
-            }
+        if (runServices) {
             runServices(programFile);
-        } else {
+        } else if (programFile.isMainEPAvailable()) {
             runMain(programFile, args);
+        } else if (programFile.isServiceEPAvailable()) {
+            runServices(programFile);
+        } else if (programFile.isWorkflowEPAvailable()) {
+            runWorkflows(programFile);
+        } else {
+            throw new RuntimeException("No entry point available in the program to start execution.");
         }
     }
 
@@ -107,6 +110,19 @@ public class LauncherUtils {
             // Ignore the error
         }
         Runtime.getRuntime().exit(0);
+    }
+
+    public static void runWorkflows(ProgramFile programFile) {
+        PrintStream outStream = System.out;
+
+        ServerConnectorRegistry serverConnectorRegistry = new ServerConnectorRegistry();
+        programFile.setServerConnectorRegistry(serverConnectorRegistry);
+        serverConnectorRegistry.initServerConnectors();
+
+        outStream.println("ballerina: deploying workflows(s) in '" + programFile.getProgramFilePath() + "'");
+        BLangProgramRunner.runWorkflow(programFile);
+
+        serverConnectorRegistry.deploymentComplete();
     }
 
     public static void runServices(ProgramFile programFile) {

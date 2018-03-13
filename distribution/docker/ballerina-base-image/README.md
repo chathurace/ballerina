@@ -78,22 +78,30 @@ After each Ballerina runtime release, the base image in the Public Docker Hub sh
 ```bash
 $ cd ballerinalang/container-support/ballerina-base-image
 <<<<<<< HEAD
+<<<<<<< HEAD
 $ cp ~/Downloads/ballerina-0.964.0.zip .
 =======
 $ cp ~/Downloads/ballerina-0.964.0.zip .
 >>>>>>> v0.964.0
+=======
+$ cp ~/Downloads/ballerina-0.964.0.zip .
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 ```
 
 2. Build the Docker image with an organization prefix for `ballerinalang`, and a version tag of the Ballerina runtime release version.
 
 ```bash
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 $ bash build.sh -d ~/dev/ballerina/ballerina-0.964.0.zip -v 0.964.0 -o ballerinalang
 ```
 
 3. This will build a Docker image with name `ballerinalang/ballerina:0.964.0` in the local Docker repository. The `latest` tag for `ballerinalang/ballerina` should now also point to this image now.
 ```bash
 $ docker tag ballerinalang/ballerina:0.964.0 ballerinalang/ballerina:latest
+<<<<<<< HEAD
 =======
 $ bash build.sh -d ~/dev/ballerina/ballerina-0.964.0.zip -v 0.964.0 -o ballerinalang
 ```
@@ -102,10 +110,13 @@ $ bash build.sh -d ~/dev/ballerina/ballerina-0.964.0.zip -v 0.964.0 -o ballerina
 ```bash
 $ docker tag ballerinalang/ballerina:0.964.0 ballerinalang/ballerina:latest
 >>>>>>> v0.964.0
+=======
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 ```
 
 4. The same image should also be pushed to `ballerina` organization. For this, re-creating the image is not necessary. Instead, another set of tags can be pointed to the same image.
 ```bash
+<<<<<<< HEAD
 <<<<<<< HEAD
 $ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:0.964.0
 $ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:latest
@@ -113,11 +124,16 @@ $ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:latest
 $ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:0.964.0
 $ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:latest
 >>>>>>> v0.964.0
+=======
+$ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:0.964.0
+$ docker tag ballerinalang/ballerina:0.964.0 ballerina/ballerina:latest
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 ```
 
 5. If the Docker images are listed, it should show an output similar to the following. Notice that the `Image ID` column contains the same value for all four tags. This is because they all point to the same AUFS layer.
 ```
 REPOSITORY                                        TAG                                 IMAGE ID            CREATED             SIZE
+<<<<<<< HEAD
 <<<<<<< HEAD
 ballerinalang/ballerina                           0.964.0                              4daa1c1f2089        1 minute ago        142MB
 ballerinalang/ballerina                           latest                              4daa1c1f2089        1 minute ago        142MB
@@ -127,11 +143,17 @@ ballerinalang/ballerina                           0.964.0                    4da
 ballerinalang/ballerina                           latest                              4daa1c1f2089        1 minute ago        142MB
 ballerina/ballerina                               0.964.0                    4daa1c1f2089        1 minute ago        142MB
 >>>>>>> v0.964.0
+=======
+ballerinalang/ballerina                           0.964.0                    4daa1c1f2089        1 minute ago        142MB
+ballerinalang/ballerina                           latest                              4daa1c1f2089        1 minute ago        142MB
+ballerina/ballerina                               0.964.0                    4daa1c1f2089        1 minute ago        142MB
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 ballerina/ballerina                               latest                              4daa1c1f2089        1 minute ago        142MB
 ```
 
 6. Push the above Docker images to the Public Docker Hub. Observe how only the first push command actually pushes any data. The rest of the push commands only push the tag details, since the image is already pushed once.
 ```bash
+<<<<<<< HEAD
 <<<<<<< HEAD
 $ docker push ballerinalang/ballerina:0.964.0
 $ docker push ballerinalang/ballerina:latest
@@ -141,5 +163,10 @@ $ docker push ballerinalang/ballerina:0.964.0
 $ docker push ballerinalang/ballerina:latest
 $ docker push ballerina/ballerina:0.964.0
 >>>>>>> v0.964.0
+=======
+$ docker push ballerinalang/ballerina:0.964.0
+$ docker push ballerinalang/ballerina:latest
+$ docker push ballerina/ballerina:0.964.0
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 $ docker push ballerina/ballerina:latest
 ```

@@ -24,6 +24,7 @@ import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.codegen.ActionInfo;
 import org.ballerinalang.util.codegen.ProgramFile;
 import org.ballerinalang.util.codegen.ServiceInfo;
+import org.ballerinalang.util.codegen.WorkflowInfo;
 import org.ballerinalang.util.debugger.DebugContext;
 import org.ballerinalang.util.transactions.LocalTransactionInfo;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -45,6 +46,7 @@ public class Context {
     private BServerConnectorFuture connectorFuture;
     protected Map<String, Object> properties = new HashMap<>();
     private ServiceInfo serviceInfo;
+    private WorkflowInfo workflowInfo;
     private LocalTransactionInfo localTransactionInfo;
     private DebugContext debugContext;
 
@@ -108,6 +110,14 @@ public class Context {
 
     public void setConnectorFuture(BServerConnectorFuture connectorFuture) {
         this.connectorFuture = connectorFuture;
+    }
+
+    public WorkflowInfo getWorkflowInfo() {
+        return workflowInfo;
+    }
+
+    public void setWorkflowInfo(WorkflowInfo workflowInfo) {
+        this.workflowInfo = workflowInfo;
     }
 
     public ServiceInfo getServiceInfo() {

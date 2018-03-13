@@ -1,0 +1,5 @@
+// Start the workflow using "ballerina run workflow-basic.bal"
+
+// Send requests to the workflow using curl as below:
+// curl -k -X POST -d '{"customer":"smith"}' https://localhost:9095/wf1
+// Customer name will be printed by the workflow

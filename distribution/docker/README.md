@@ -101,10 +101,14 @@ chmod +r ~/ballerina/packages/mypackage.balx
 
 # Run container with the volume mount
 <<<<<<< HEAD
+<<<<<<< HEAD
 docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.964.0
 =======
 docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.964.0
 >>>>>>> v0.964.0
+=======
+docker run -v ~/ballerina/packages:/ballerina/files -it ballerinalang/ballerina:0.964.0
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 ```
 
 If you are running a Ballerina Service,
@@ -114,10 +118,14 @@ cp mysvcpackage.balx ~/ballerina/packages/
 chmod +r ~/ballerina/packages/mysvcpackage.balx
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.964.0
 =======
 docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.964.0
 >>>>>>> v0.964.0
+=======
+docker run -v /tmp/testb:/ballerina/files -p 9090:9090 -it ballerinalang/ballerina:0.964.0
+>>>>>>> 3a3f8cf60d83d941e1e8d27bf90e76533bfc5bd6
 ```
 ## License
 Ballerina Container Support is licensed under [Apache License v2](LICENSE).

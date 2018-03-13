@@ -21,6 +21,7 @@ import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.BallerinaServerConnector;
 import org.ballerinalang.connector.api.Service;
+import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.net.ws.WebSocketService;
 import org.ballerinalang.net.ws.WebSocketServicesRegistry;
 
@@ -60,6 +61,11 @@ public class BallerinaHttpServerConnector implements BallerinaServerConnector {
             WebSocketService wsService = new WebSocketService(service);
             webSocketServicesRegistry.registerService(wsService);
         }
+    }
+
+    @Override
+    public void workflowRegistered(BWorkflow workflow) {
+        httpServicesRegistry.registerWorkflow(workflow);
     }
 
     @Override

@@ -50,6 +50,7 @@ public class BLangPackage extends BLangNode implements PackageNode {
     public List<BLangImportPackage> imports;
     public List<BLangXMLNS> xmlnsList;
     public List<BLangVariable> globalVars;
+    public List<BLangWorkflow> workflows;
     public List<BLangService> services;
     public List<BLangConnector> connectors;
     public List<BLangFunction> functions;
@@ -68,6 +69,7 @@ public class BLangPackage extends BLangNode implements PackageNode {
         this.imports = new ArrayList<>();
         this.xmlnsList = new ArrayList<>();
         this.globalVars = new ArrayList<>();
+        this.workflows = new ArrayList<>();
         this.services = new ArrayList<>();
         this.connectors = new ArrayList<>();
         this.functions = new ArrayList<>();

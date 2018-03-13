@@ -297,6 +297,15 @@ public class HttpUtil {
         }
     }
 
+    public static void sendAccepted(HTTPCarbonMessage requestMessage) {
+        String payload = " ";
+        HTTPCarbonMessage response = createHttpCarbonMessage(false);
+        response.waitAndReleaseAllEntities();
+        response.addHttpContent(new DefaultLastHttpContent(Unpooled.wrappedBuffer(payload.getBytes())));
+        setHttpStatusCodes(202, response);
+        sendOutboundResponse(requestMessage, response);
+    }
+
     public static HttpResponseFuture sendOutboundResponse(HTTPCarbonMessage requestMsg,
                                                           HTTPCarbonMessage responseMsg) {
         HttpResponseFuture responseFuture;

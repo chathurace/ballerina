@@ -124,6 +124,18 @@ public class BallerinaParserBaseListener implements BallerinaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWorkflowDefinition(BallerinaParser.WorkflowDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWorkflowDefinition(BallerinaParser.WorkflowDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterResourceDefinition(BallerinaParser.ResourceDefinitionContext ctx) { }
 	/**
 	 * {@inheritDoc}

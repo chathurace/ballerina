@@ -98,6 +98,16 @@ public interface BallerinaParserListener extends ParseTreeListener {
 	 */
 	void exitServiceBody(BallerinaParser.ServiceBodyContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link BallerinaParser#workflowDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterWorkflowDefinition(BallerinaParser.WorkflowDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BallerinaParser#workflowDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitWorkflowDefinition(BallerinaParser.WorkflowDefinitionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link BallerinaParser#resourceDefinition}.
 	 * @param ctx the parse tree
 	 */

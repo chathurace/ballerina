@@ -43,6 +43,7 @@ public class ProgramFile implements ConstantPool, AttributeInfoPool {
     // Entry point flags
     public static final int EP_MAIN_FLAG = 1;
     public static final int EP_SERVICE_FLAG = 2;
+    public static final int EP_WORKFLOW_FLAG = 8;
 
     private int magicValue = MAGIC_NUMBER;
     // TODO Finalize the version number;
@@ -54,6 +55,7 @@ public class ProgramFile implements ConstantPool, AttributeInfoPool {
     public int entryPkgCPIndex;
     private boolean mainFucAvailable = false;
     private boolean servicesAvailable = false;
+    private boolean workflowsAvailable = false;
 
     // This is the actual path given by the user and this is used primarily for error reporting
     private Path programFilePath;
@@ -80,6 +82,14 @@ public class ProgramFile implements ConstantPool, AttributeInfoPool {
 
     public void setMainEPAvailable(boolean mainFuncAvailable) {
         this.mainFucAvailable = mainFuncAvailable;
+    }
+
+    public boolean isWorkflowEPAvailable() {
+        return workflowsAvailable;
+    }
+
+    public void setWorkflowEPAvailable(boolean workflowsAvailable) {
+        this.workflowsAvailable = workflowsAvailable;
     }
 
     public boolean isServiceEPAvailable() {
