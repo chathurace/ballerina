@@ -75,6 +75,7 @@ WITH        : 'with' ;
 BIND        : 'bind' ;
 IN          : 'in' ;
 LOCK        : 'lock' ;
+RECEIVE     : 'receive';
 UNTAINT     : 'untaint' ;
 
 // Separators

@@ -54,6 +54,7 @@ import org.ballerinalang.model.tree.expressions.XMLLiteralNode;
 import org.ballerinalang.model.tree.statements.BlockNode;
 import org.ballerinalang.model.tree.statements.ForkJoinNode;
 import org.ballerinalang.model.tree.statements.IfNode;
+import org.ballerinalang.model.tree.statements.ReceiveNode;
 import org.ballerinalang.model.tree.statements.StatementNode;
 import org.ballerinalang.model.tree.statements.TransactionNode;
 import org.ballerinalang.model.tree.statements.VariableDefinitionNode;
@@ -126,6 +127,7 @@ import org.wso2.ballerinalang.compiler.tree.statements.BLangForkJoin;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangIf;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangLock;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangNext;
+import org.wso2.ballerinalang.compiler.tree.statements.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangThrow;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangTransaction;
@@ -220,6 +222,8 @@ public class BLangPackageBuilder {
     private Stack<IfNode> ifElseStatementStack = new Stack<>();
 
     private Stack<TransactionNode> transactionNodeStack = new Stack<>();
+
+    private Stack<ReceiveNode> receiveNodeStack = new Stack<>();
 
     private Stack<ForkJoinNode> forkJoinNodesStack = new Stack<>();
 
@@ -1495,6 +1499,21 @@ public class BLangPackageBuilder {
     public void addRetryCountExpression() {
         BLangTransaction transaction = (BLangTransaction) transactionNodeStack.peek();
         transaction.retryCount = (BLangExpression) exprNodeStack.pop();
+    }
+
+    public void startReceiveStatement() {
+        ReceiveNode receiveNode = (ReceiveNode) TreeBuilder.createReceiveNode();
+        receiveNodeStack.push(receiveNode);
+    }
+
+    public void addReceiveStatement(DiagnosticPos pos, Set<Whitespace> ws) {
+        BLangReceive receiveNode = (BLangReceive) receiveNodeStack.peek();
+        receiveNode.correlationMap = (BLangExpression) exprNodeStack.pop();
+        receiveNode.messageName = (BLangExpression) exprNodeStack.pop();
+        receiveNode.pos = pos;
+        receiveNode.addWS(ws);
+
+        addExpressionNode(receiveNode);
     }
 
     public void startIfElseNode(DiagnosticPos pos) {

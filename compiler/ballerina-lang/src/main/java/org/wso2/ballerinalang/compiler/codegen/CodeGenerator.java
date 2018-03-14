@@ -128,6 +128,7 @@ import org.wso2.ballerinalang.compiler.tree.statements.BLangForkJoin;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangIf;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangLock;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangNext;
+import org.wso2.ballerinalang.compiler.tree.statements.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangReturn.BLangWorkerReturn;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangStatement;
@@ -489,7 +490,7 @@ public class CodeGenerator extends BLangNodeVisitor {
 
         for (BLangStatement stmt : blockNode.stmts) {
             if (stmt.getKind() != NodeKind.TRY && stmt.getKind() != NodeKind.CATCH
-                    && stmt.getKind() != NodeKind.IF) {
+                    && stmt.getKind() != NodeKind.IF && stmt.getKind() != NodeKind.RECEIVE) {
                 addLineNumberInfo(stmt.pos);
             }
 
@@ -1744,6 +1745,42 @@ public class CodeGenerator extends BLangNodeVisitor {
         return operands;
     }
 
+    private Operand[] getReceiveOperands(BLangReceive iExpr) {
+        // call funcRefCPIndex, nArgRegs, argRegs[nArgRegs], nRetRegs, retRegs[nRetRegs]
+        int i = 0;
+        int nArgRegs = 2;
+        int nRetRegs = 1;
+        Operand[] operands = new Operand[nArgRegs + nRetRegs + 2];
+//        operands[i++] = getOperand(funcRefCPIndex);
+        operands[i++] = getOperand(nArgRegs);
+        operands[i++] = iExpr.messageName.regIndex;
+        operands[i++] = iExpr.correlationMap.regIndex;
+//        for (BLangExpression argExpr : iExpr.argExprs) {
+//            operands[i++] = genNode(argExpr, this.env).regIndex;
+//        }
+
+        operands[i++] = getOperand(nRetRegs);
+        // Calculate registers to store return values
+        RegIndex[] iExprRegIndexes;
+        if (iExpr.getRegIndexes() != null) {
+            iExprRegIndexes = iExpr.getRegIndexes();
+        } else if (iExpr.regIndex != null) {
+            iExprRegIndexes = new RegIndex[nRetRegs];
+            iExprRegIndexes[0] = iExpr.regIndex;
+        } else {
+            iExprRegIndexes = new RegIndex[nRetRegs];
+        }
+
+        for (int j = 0; j < nRetRegs; j++) {
+            RegIndex regIndex = calcAndGetExprRegIndex(iExprRegIndexes[j], iExpr.returnType);
+            iExprRegIndexes[j] = regIndex;
+            operands[i++] = regIndex;
+        }
+
+        iExpr.setRegIndexes(iExprRegIndexes);
+        return operands;
+    }
+
     private void addVariableCountAttributeInfo(ConstantPool constantPool,
                                                AttributeInfoPool attributeInfoPool,
                                                int[] fieldCount) {
@@ -2572,6 +2609,14 @@ public class CodeGenerator extends BLangNodeVisitor {
     public void visit(BLangThrow throwNode) {
         genNode(throwNode.expr, env);
         emit(InstructionFactory.get(InstructionCodes.THROW, throwNode.expr.regIndex));
+    }
+
+    public void visit(BLangReceive receiveNode) {
+        genNode(receiveNode.messageName, env);
+        genNode(receiveNode.correlationMap, env);
+//        emit(InstructionCodes.RECEIVE, receiveNode.messageName.regIndex, receiveNode.correlationMap.regIndex);
+        Operand[] operands = getReceiveOperands(receiveNode);
+        emit(InstructionCodes.RECEIVE, operands);
     }
 
     public void visit(BLangIf ifNode) {

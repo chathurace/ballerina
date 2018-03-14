@@ -904,6 +904,16 @@ public interface BallerinaParserListener extends ParseTreeListener {
 	 */
 	void exitThrowStatement(BallerinaParser.ThrowStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link BallerinaParser#receiveStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReceiveStatement(BallerinaParser.ReceiveStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BallerinaParser#receiveStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReceiveStatement(BallerinaParser.ReceiveStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link BallerinaParser#returnStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -969,6 +979,18 @@ public interface BallerinaParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitXmlAttribVariableReference(BallerinaParser.XmlAttribVariableReferenceContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code receiveStatemenReferance}
+	 * labeled alternative in {@link BallerinaParser#variableReference}.
+	 * @param ctx the parse tree
+	 */
+	void enterReceiveStatemenReferance(BallerinaParser.ReceiveStatemenReferanceContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code receiveStatemenReferance}
+	 * labeled alternative in {@link BallerinaParser#variableReference}.
+	 * @param ctx the parse tree
+	 */
+	void exitReceiveStatemenReferance(BallerinaParser.ReceiveStatemenReferanceContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code simpleVariableReference}
 	 * labeled alternative in {@link BallerinaParser#variableReference}.
