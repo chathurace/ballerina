@@ -2801,6 +2801,8 @@ public class BLangVM {
         String messagename = controlStack.currentFrame.getStringRegs()[argRegs[0]];
         BRefType correlationMap = controlStack.currentFrame.refRegs[argRegs[1]];
         WorkflowUtils.persistStack(controlStack, messagename, correlationMap, ip);
+//        BJSON testResponse = new BJSON("{\"status\":\"approved\"}");
+//        controlStack.currentFrame.refRegs[retRegs[0]] = testResponse;
         ip = -1;
     }
 

@@ -1,4 +1,4 @@
-// Generated from BallerinaParser.g4 by ANTLR 4.5.3
+// Generated from BallerinaParser.g4 by ANTLR 4.5.1
 package org.wso2.ballerinalang.compiler.parser.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class BallerinaParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.5.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -596,7 +596,6 @@ public class BallerinaParser extends Parser {
 			setState(330);
 			match(IMPORT);
 			setState(334);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				{
@@ -722,7 +721,6 @@ public class BallerinaParser extends Parser {
 		enterRule(_localctx, 12, RULE_definition);
 		try {
 			setState(355);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -1164,7 +1162,6 @@ public class BallerinaParser extends Parser {
 		int _la;
 		try {
 			setState(440);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,22,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -1289,7 +1286,6 @@ public class BallerinaParser extends Parser {
 		int _la;
 		try {
 			setState(469);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -1730,7 +1726,6 @@ public class BallerinaParser extends Parser {
 		int _la;
 		try {
 			setState(557);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,43,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -3097,7 +3092,6 @@ public class BallerinaParser extends Parser {
 		try {
 			int _alt;
 			setState(732);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,68,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -3418,7 +3412,6 @@ public class BallerinaParser extends Parser {
 				setState(746);
 				match(TYPE_MAP);
 				setState(751);
-				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,70,_ctx) ) {
 				case 1:
 					{
@@ -3439,7 +3432,6 @@ public class BallerinaParser extends Parser {
 				setState(753);
 				match(TYPE_XML);
 				setState(764);
-				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,72,_ctx) ) {
 				case 1:
 					{
@@ -3473,7 +3465,6 @@ public class BallerinaParser extends Parser {
 				setState(766);
 				match(TYPE_JSON);
 				setState(771);
-				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,73,_ctx) ) {
 				case 1:
 					{
@@ -3494,7 +3485,6 @@ public class BallerinaParser extends Parser {
 				setState(773);
 				match(TYPE_TABLE);
 				setState(778);
-				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,74,_ctx) ) {
 				case 1:
 					{
@@ -3569,7 +3559,6 @@ public class BallerinaParser extends Parser {
 			setState(784);
 			match(LEFT_PARENTHESIS);
 			setState(787);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,76,_ctx) ) {
 			case 1:
 				{
@@ -3587,7 +3576,6 @@ public class BallerinaParser extends Parser {
 			setState(789);
 			match(RIGHT_PARENTHESIS);
 			setState(791);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,77,_ctx) ) {
 			case 1:
 				{
@@ -4083,7 +4071,6 @@ public class BallerinaParser extends Parser {
 		enterRule(_localctx, 92, RULE_statement);
 		try {
 			setState(854);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,83,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -5240,7 +5227,6 @@ public class BallerinaParser extends Parser {
 			setState(992);
 			match(IN);
 			setState(995);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,100,_ctx) ) {
 			case 1:
 				{
@@ -5327,7 +5313,6 @@ public class BallerinaParser extends Parser {
 		int _la;
 		try {
 			setState(1019);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,103,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -5670,7 +5655,6 @@ public class BallerinaParser extends Parser {
 			setState(1055);
 			match(JOIN);
 			setState(1060);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,108,_ctx) ) {
 			case 1:
 				{
@@ -6430,7 +6414,6 @@ public class BallerinaParser extends Parser {
 		enterRule(_localctx, 156, RULE_workerInteractionStatement);
 		try {
 			setState(1182);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,123,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -6510,7 +6493,6 @@ public class BallerinaParser extends Parser {
 		enterRule(_localctx, 158, RULE_triggerWorker);
 		try {
 			setState(1194);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,124,_ctx) ) {
 			case 1:
 				_localctx = new InvokeWorkerContext(_localctx);
@@ -6739,7 +6721,6 @@ public class BallerinaParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(1205);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,125,_ctx) ) {
 			case 1:
 				{
@@ -6780,7 +6761,6 @@ public class BallerinaParser extends Parser {
 					_prevctx = _localctx;
 					{
 					setState(1215);
-					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,126,_ctx) ) {
 					case 1:
 						{
@@ -6957,7 +6937,6 @@ public class BallerinaParser extends Parser {
 			setState(1227);
 			match(AT);
 			setState(1232);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,128,_ctx) ) {
 			case 1:
 				{
@@ -8079,22 +8058,6 @@ public class BallerinaParser extends Parser {
 			if ( listener instanceof BallerinaParserListener ) ((BallerinaParserListener)listener).exitBinaryCompareExpression(this);
 		}
 	}
-	public static class BuiltInReferenceTypeTypeExpressionContext extends ExpressionContext {
-		public BuiltInReferenceTypeNameContext builtInReferenceTypeName() {
-			return getRuleContext(BuiltInReferenceTypeNameContext.class,0);
-		}
-		public TerminalNode DOT() { return getToken(BallerinaParser.DOT, 0); }
-		public TerminalNode Identifier() { return getToken(BallerinaParser.Identifier, 0); }
-		public BuiltInReferenceTypeTypeExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof BallerinaParserListener ) ((BallerinaParserListener)listener).enterBuiltInReferenceTypeTypeExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof BallerinaParserListener ) ((BallerinaParserListener)listener).exitBuiltInReferenceTypeTypeExpression(this);
-		}
-	}
 	public static class UnaryExpressionContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -8113,6 +8076,22 @@ public class BallerinaParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof BallerinaParserListener ) ((BallerinaParserListener)listener).exitUnaryExpression(this);
+		}
+	}
+	public static class BuiltInReferenceTypeTypeExpressionContext extends ExpressionContext {
+		public BuiltInReferenceTypeNameContext builtInReferenceTypeName() {
+			return getRuleContext(BuiltInReferenceTypeNameContext.class,0);
+		}
+		public TerminalNode DOT() { return getToken(BallerinaParser.DOT, 0); }
+		public TerminalNode Identifier() { return getToken(BallerinaParser.Identifier, 0); }
+		public BuiltInReferenceTypeTypeExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof BallerinaParserListener ) ((BallerinaParserListener)listener).enterBuiltInReferenceTypeTypeExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof BallerinaParserListener ) ((BallerinaParserListener)listener).exitBuiltInReferenceTypeTypeExpression(this);
 		}
 	}
 	public static class TernaryExpressionContext extends ExpressionContext {
@@ -8170,173 +8149,172 @@ public class BallerinaParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(1365);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,140,_ctx) ) {
 			case 1:
-				{
-				_localctx = new SimpleLiteralExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-
-				setState(1327);
-				simpleLiteral();
-				}
-				break;
-			case 2:
-				{
-				_localctx = new ArrayLiteralExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1328);
-				arrayLiteral();
-				}
-				break;
-			case 3:
-				{
-				_localctx = new RecordLiteralExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1329);
-				recordLiteral();
-				}
-				break;
-			case 4:
-				{
-				_localctx = new XmlLiteralExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1330);
-				xmlLiteral();
-				}
-				break;
-			case 5:
-				{
-				_localctx = new StringTemplateLiteralExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1331);
-				stringTemplateLiteral();
-				}
-				break;
-			case 6:
-				{
-				_localctx = new ValueTypeTypeExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1332);
-				valueTypeName();
-				setState(1333);
-				match(DOT);
-				setState(1334);
-				match(Identifier);
-				}
-				break;
-			case 7:
-				{
-				_localctx = new BuiltInReferenceTypeTypeExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1336);
-				builtInReferenceTypeName();
-				setState(1337);
-				match(DOT);
-				setState(1338);
-				match(Identifier);
-				}
-				break;
-			case 8:
-				{
-				_localctx = new VariableReferenceExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1340);
-				variableReference(0);
-				}
-				break;
-			case 9:
-				{
-				_localctx = new LambdaFunctionExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1341);
-				lambdaFunction();
-				}
-				break;
-			case 10:
-				{
-				_localctx = new ConnectorInitExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1342);
-				connectorInit();
-				}
-				break;
-			case 11:
 				{
 				_localctx = new TypeCastingExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(1343);
+
+				setState(1327);
 				match(LEFT_PARENTHESIS);
-				setState(1344);
+				setState(1328);
 				typeName(0);
-				setState(1345);
+				setState(1329);
 				match(RIGHT_PARENTHESIS);
-				setState(1346);
+				setState(1330);
 				expression(13);
 				}
 				break;
-			case 12:
+			case 2:
 				{
 				_localctx = new TypeConversionExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(1348);
+				setState(1332);
 				match(LT);
-				setState(1349);
+				setState(1333);
 				typeName(0);
-				setState(1352);
+				setState(1336);
 				_la = _input.LA(1);
 				if (_la==COMMA) {
 					{
-					setState(1350);
+					setState(1334);
 					match(COMMA);
-					setState(1351);
+					setState(1335);
 					functionInvocation();
 					}
 				}
 
-				setState(1354);
+				setState(1338);
 				match(GT);
-				setState(1355);
+				setState(1339);
 				expression(12);
 				}
 				break;
-			case 13:
-				{
-				_localctx = new TypeAccessExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(1357);
-				match(TYPEOF);
-				setState(1358);
-				builtInTypeName();
-				}
-				break;
-			case 14:
+			case 3:
 				{
 				_localctx = new UnaryExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(1359);
+				setState(1341);
 				_la = _input.LA(1);
 				if ( !(((((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & ((1L << (LENGTHOF - 60)) | (1L << (TYPEOF - 60)) | (1L << (UNTAINT - 60)) | (1L << (ADD - 60)) | (1L << (SUB - 60)) | (1L << (NOT - 60)))) != 0)) ) {
 				_errHandler.recoverInline(this);
 				} else {
 					consume();
 				}
-				setState(1360);
+				setState(1342);
 				expression(10);
+				}
+				break;
+			case 4:
+				{
+				_localctx = new SimpleLiteralExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1343);
+				simpleLiteral();
+				}
+				break;
+			case 5:
+				{
+				_localctx = new ArrayLiteralExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1344);
+				arrayLiteral();
+				}
+				break;
+			case 6:
+				{
+				_localctx = new RecordLiteralExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1345);
+				recordLiteral();
+				}
+				break;
+			case 7:
+				{
+				_localctx = new XmlLiteralExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1346);
+				xmlLiteral();
+				}
+				break;
+			case 8:
+				{
+				_localctx = new StringTemplateLiteralExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1347);
+				stringTemplateLiteral();
+				}
+				break;
+			case 9:
+				{
+				_localctx = new ValueTypeTypeExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1348);
+				valueTypeName();
+				setState(1349);
+				match(DOT);
+				setState(1350);
+				match(Identifier);
+				}
+				break;
+			case 10:
+				{
+				_localctx = new BuiltInReferenceTypeTypeExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1352);
+				builtInReferenceTypeName();
+				setState(1353);
+				match(DOT);
+				setState(1354);
+				match(Identifier);
+				}
+				break;
+			case 11:
+				{
+				_localctx = new VariableReferenceExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1356);
+				variableReference(0);
+				}
+				break;
+			case 12:
+				{
+				_localctx = new LambdaFunctionExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1357);
+				lambdaFunction();
+				}
+				break;
+			case 13:
+				{
+				_localctx = new ConnectorInitExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1358);
+				connectorInit();
+				}
+				break;
+			case 14:
+				{
+				_localctx = new TypeAccessExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(1359);
+				match(TYPEOF);
+				setState(1360);
+				builtInTypeName();
 				}
 				break;
 			case 15:
@@ -8363,7 +8341,6 @@ public class BallerinaParser extends Parser {
 					_prevctx = _localctx;
 					{
 					setState(1394);
-					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,141,_ctx) ) {
 					case 1:
 						{
@@ -8532,7 +8509,6 @@ public class BallerinaParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(1401);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,143,_ctx) ) {
 			case 1:
 				{
@@ -8601,7 +8577,6 @@ public class BallerinaParser extends Parser {
 			setState(1408);
 			match(LEFT_PARENTHESIS);
 			setState(1411);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,145,_ctx) ) {
 			case 1:
 				{
@@ -8968,7 +8943,6 @@ public class BallerinaParser extends Parser {
 		int _la;
 		try {
 			setState(1467);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,153,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -9393,7 +9367,6 @@ public class BallerinaParser extends Parser {
 		enterRule(_localctx, 224, RULE_element);
 		try {
 			setState(1514);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,160,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -10071,7 +10044,6 @@ public class BallerinaParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(1606);
-				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,172,_ctx) ) {
 				case 1:
 					{
@@ -10831,7 +10803,6 @@ public class BallerinaParser extends Parser {
 		int _la;
 		try {
 			setState(1703);
-			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,192,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
@@ -11423,8 +11394,8 @@ public class BallerinaParser extends Parser {
 		"\16\\\u04fd\13\\\3\\\3\\\3]\3]\3^\3^\3^\7^\u0506\n^\f^\16^\u0509\13^\3"+
 		"_\3_\3_\7_\u050e\n_\f_\16_\u0511\13_\3_\3_\3`\3`\3`\7`\u0518\n`\f`\16"+
 		"`\u051b\13`\3`\3`\3a\3a\3a\3b\3b\3b\3b\3b\3c\3c\3d\3d\3d\3d\5d\u052d\n"+
-		"d\3d\3d\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3"+
-		"e\3e\3e\3e\3e\3e\5e\u054b\ne\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\5e\u0558"+
+		"d\3d\3d\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\5e\u053b\ne\3e\3e\3e\3e\3e\3e\3"+
+		"e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\5e\u0558"+
 		"\ne\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e\3e"+
 		"\3e\3e\3e\3e\3e\7e\u0575\ne\fe\16e\u0578\13e\3f\3f\5f\u057c\nf\3f\3f\3"+
 		"g\5g\u0581\ng\3g\3g\3g\5g\u0586\ng\3g\3g\3h\3h\3h\7h\u058d\nh\fh\16h\u0590"+
@@ -11847,43 +11818,43 @@ public class BallerinaParser extends Parser {
 		"d\2\u0527\u00c5\3\2\2\2\u0528\u0529\7\27\2\2\u0529\u052c\7i\2\2\u052a"+
 		"\u052b\7\5\2\2\u052b\u052d\7k\2\2\u052c\u052a\3\2\2\2\u052c\u052d\3\2"+
 		"\2\2\u052d\u052e\3\2\2\2\u052e\u052f\7F\2\2\u052f\u00c7\3\2\2\2\u0530"+
-		"\u0531\be\1\2\u0531\u0558\5\u00d8m\2\u0532\u0558\5h\65\2\u0533\u0558\5"+
-		"b\62\2\u0534\u0558\5\u00dan\2\u0535\u0558\5\u00f8}\2\u0536\u0537\5J&\2"+
-		"\u0537\u0538\7H\2\2\u0538\u0539\7k\2\2\u0539\u0558\3\2\2\2\u053a\u053b"+
-		"\5L\'\2\u053b\u053c\7H\2\2\u053c\u053d\7k\2\2\u053d\u0558\3\2\2\2\u053e"+
-		"\u0558\5\u00a4S\2\u053f\u0558\5\34\17\2\u0540\u0558\5j\66\2\u0541\u0542"+
-		"\7L\2\2\u0542\u0543\5@!\2\u0543\u0544\7M\2\2\u0544\u0545\5\u00c8e\17\u0545"+
-		"\u0558\3\2\2\2\u0546\u0547\7\\\2\2\u0547\u054a\5@!\2\u0548\u0549\7I\2"+
-		"\2\u0549\u054b\5\u00acW\2\u054a\u0548\3\2\2\2\u054a\u054b\3\2\2\2\u054b"+
-		"\u054c\3\2\2\2\u054c\u054d\7[\2\2\u054d\u054e\5\u00c8e\16\u054e\u0558"+
-		"\3\2\2\2\u054f\u0550\7?\2\2\u0550\u0558\5B\"\2\u0551\u0552\t\5\2\2\u0552"+
-		"\u0558\5\u00c8e\f\u0553\u0554\7L\2\2\u0554\u0555\5\u00c8e\2\u0555\u0556"+
-		"\7M\2\2\u0556\u0558\3\2\2\2\u0557\u0530\3\2\2\2\u0557\u0532\3\2\2\2\u0557"+
-		"\u0533\3\2\2\2\u0557\u0534\3\2\2\2\u0557\u0535\3\2\2\2\u0557\u0536\3\2"+
-		"\2\2\u0557\u053a\3\2\2\2\u0557\u053e\3\2\2\2\u0557\u053f\3\2\2\2\u0557"+
-		"\u0540\3\2\2\2\u0557\u0541\3\2\2\2\u0557\u0546\3\2\2\2\u0557\u054f\3\2"+
-		"\2\2\u0557\u0551\3\2\2\2\u0557\u0553\3\2\2\2\u0558\u0576\3\2\2\2\u0559"+
-		"\u055a\f\n\2\2\u055a\u055b\7V\2\2\u055b\u0575\5\u00c8e\13\u055c\u055d"+
-		"\f\t\2\2\u055d\u055e\t\6\2\2\u055e\u0575\5\u00c8e\n\u055f\u0560\f\b\2"+
-		"\2\u0560\u0561\t\7\2\2\u0561\u0575\5\u00c8e\t\u0562\u0563\f\7\2\2\u0563"+
-		"\u0564\t\b\2\2\u0564\u0575\5\u00c8e\b\u0565\u0566\f\6\2\2\u0566\u0567"+
-		"\t\t\2\2\u0567\u0575\5\u00c8e\7\u0568\u0569\f\5\2\2\u0569\u056a\7_\2\2"+
-		"\u056a\u0575\5\u00c8e\6\u056b\u056c\f\4\2\2\u056c\u056d\7`\2\2\u056d\u0575"+
-		"\5\u00c8e\5\u056e\u056f\f\3\2\2\u056f\u0570\7P\2\2\u0570\u0571\5\u00c8"+
-		"e\2\u0571\u0572\7G\2\2\u0572\u0573\5\u00c8e\4\u0573\u0575\3\2\2\2\u0574"+
-		"\u0559\3\2\2\2\u0574\u055c\3\2\2\2\u0574\u055f\3\2\2\2\u0574\u0562\3\2"+
-		"\2\2\u0574\u0565\3\2\2\2\u0574\u0568\3\2\2\2\u0574\u056b\3\2\2\2\u0574"+
-		"\u056e\3\2\2\2\u0575\u0578\3\2\2\2\u0576\u0574\3\2\2\2\u0576\u0577\3\2"+
-		"\2\2\u0577\u00c9\3\2\2\2\u0578\u0576\3\2\2\2\u0579\u057a\7k\2\2\u057a"+
-		"\u057c\7G\2\2\u057b\u0579\3\2\2\2\u057b\u057c\3\2\2\2\u057c\u057d\3\2"+
-		"\2\2\u057d\u057e\7k\2\2\u057e\u00cb\3\2\2\2\u057f\u0581\7\30\2\2\u0580"+
-		"\u057f\3\2\2\2\u0580\u0581\3\2\2\2\u0581\u0582\3\2\2\2\u0582\u0585\7L"+
-		"\2\2\u0583\u0586\5\u00d2j\2\u0584\u0586\5\u00ceh\2\u0585\u0583\3\2\2\2"+
-		"\u0585\u0584\3\2\2\2\u0586\u0587\3\2\2\2\u0587\u0588\7M\2\2\u0588\u00cd"+
-		"\3\2\2\2\u0589\u058e\5\u00d0i\2\u058a\u058b\7I\2\2\u058b\u058d\5\u00d0"+
-		"i\2\u058c\u058a\3\2\2\2\u058d\u0590\3\2\2\2\u058e\u058c\3\2\2\2\u058e"+
-		"\u058f\3\2\2\2\u058f\u00cf\3\2\2\2\u0590\u058e\3\2\2\2\u0591\u0593\5T"+
-		"+\2\u0592\u0591\3\2\2\2\u0593\u0596\3\2\2\2\u0594\u0592\3\2\2\2\u0594"+
+		"\u0531\be\1\2\u0531\u0532\7L\2\2\u0532\u0533\5@!\2\u0533\u0534\7M\2\2"+
+		"\u0534\u0535\5\u00c8e\17\u0535\u0558\3\2\2\2\u0536\u0537\7\\\2\2\u0537"+
+		"\u053a\5@!\2\u0538\u0539\7I\2\2\u0539\u053b\5\u00acW\2\u053a\u0538\3\2"+
+		"\2\2\u053a\u053b\3\2\2\2\u053b\u053c\3\2\2\2\u053c\u053d\7[\2\2\u053d"+
+		"\u053e\5\u00c8e\16\u053e\u0558\3\2\2\2\u053f\u0540\t\5\2\2\u0540\u0558"+
+		"\5\u00c8e\f\u0541\u0558\5\u00d8m\2\u0542\u0558\5h\65\2\u0543\u0558\5b"+
+		"\62\2\u0544\u0558\5\u00dan\2\u0545\u0558\5\u00f8}\2\u0546\u0547\5J&\2"+
+		"\u0547\u0548\7H\2\2\u0548\u0549\7k\2\2\u0549\u0558\3\2\2\2\u054a\u054b"+
+		"\5L\'\2\u054b\u054c\7H\2\2\u054c\u054d\7k\2\2\u054d\u0558\3\2\2\2\u054e"+
+		"\u0558\5\u00a4S\2\u054f\u0558\5\34\17\2\u0550\u0558\5j\66\2\u0551\u0552"+
+		"\7?\2\2\u0552\u0558\5B\"\2\u0553\u0554\7L\2\2\u0554\u0555\5\u00c8e\2\u0555"+
+		"\u0556\7M\2\2\u0556\u0558\3\2\2\2\u0557\u0530\3\2\2\2\u0557\u0536\3\2"+
+		"\2\2\u0557\u053f\3\2\2\2\u0557\u0541\3\2\2\2\u0557\u0542\3\2\2\2\u0557"+
+		"\u0543\3\2\2\2\u0557\u0544\3\2\2\2\u0557\u0545\3\2\2\2\u0557\u0546\3\2"+
+		"\2\2\u0557\u054a\3\2\2\2\u0557\u054e\3\2\2\2\u0557\u054f\3\2\2\2\u0557"+
+		"\u0550\3\2\2\2\u0557\u0551\3\2\2\2\u0557\u0553\3\2\2\2\u0558\u0576\3\2"+
+		"\2\2\u0559\u055a\f\n\2\2\u055a\u055b\7V\2\2\u055b\u0575\5\u00c8e\13\u055c"+
+		"\u055d\f\t\2\2\u055d\u055e\t\6\2\2\u055e\u0575\5\u00c8e\n\u055f\u0560"+
+		"\f\b\2\2\u0560\u0561\t\7\2\2\u0561\u0575\5\u00c8e\t\u0562\u0563\f\7\2"+
+		"\2\u0563\u0564\t\b\2\2\u0564\u0575\5\u00c8e\b\u0565\u0566\f\6\2\2\u0566"+
+		"\u0567\t\t\2\2\u0567\u0575\5\u00c8e\7\u0568\u0569\f\5\2\2\u0569\u056a"+
+		"\7_\2\2\u056a\u0575\5\u00c8e\6\u056b\u056c\f\4\2\2\u056c\u056d\7`\2\2"+
+		"\u056d\u0575\5\u00c8e\5\u056e\u056f\f\3\2\2\u056f\u0570\7P\2\2\u0570\u0571"+
+		"\5\u00c8e\2\u0571\u0572\7G\2\2\u0572\u0573\5\u00c8e\4\u0573\u0575\3\2"+
+		"\2\2\u0574\u0559\3\2\2\2\u0574\u055c\3\2\2\2\u0574\u055f\3\2\2\2\u0574"+
+		"\u0562\3\2\2\2\u0574\u0565\3\2\2\2\u0574\u0568\3\2\2\2\u0574\u056b\3\2"+
+		"\2\2\u0574\u056e\3\2\2\2\u0575\u0578\3\2\2\2\u0576\u0574\3\2\2\2\u0576"+
+		"\u0577\3\2\2\2\u0577\u00c9\3\2\2\2\u0578\u0576\3\2\2\2\u0579\u057a\7k"+
+		"\2\2\u057a\u057c\7G\2\2\u057b\u0579\3\2\2\2\u057b\u057c\3\2\2\2\u057c"+
+		"\u057d\3\2\2\2\u057d\u057e\7k\2\2\u057e\u00cb\3\2\2\2\u057f\u0581\7\30"+
+		"\2\2\u0580\u057f\3\2\2\2\u0580\u0581\3\2\2\2\u0581\u0582\3\2\2\2\u0582"+
+		"\u0585\7L\2\2\u0583\u0586\5\u00d2j\2\u0584\u0586\5\u00ceh\2\u0585\u0583"+
+		"\3\2\2\2\u0585\u0584\3\2\2\2\u0586\u0587\3\2\2\2\u0587\u0588\7M\2\2\u0588"+
+		"\u00cd\3\2\2\2\u0589\u058e\5\u00d0i\2\u058a\u058b\7I\2\2\u058b\u058d\5"+
+		"\u00d0i\2\u058c\u058a\3\2\2\2\u058d\u0590\3\2\2\2\u058e\u058c\3\2\2\2"+
+		"\u058e\u058f\3\2\2\2\u058f\u00cf\3\2\2\2\u0590\u058e\3\2\2\2\u0591\u0593"+
+		"\5T+\2\u0592\u0591\3\2\2\2\u0593\u0596\3\2\2\2\u0594\u0592\3\2\2\2\u0594"+
 		"\u0595\3\2\2\2\u0595\u0597\3\2\2\2\u0596\u0594\3\2\2\2\u0597\u0598\5@"+
 		"!\2\u0598\u00d1\3\2\2\2\u0599\u059e\5\u00d4k\2\u059a\u059b\7I\2\2\u059b"+
 		"\u059d\5\u00d4k\2\u059c\u059a\3\2\2\2\u059d\u05a0\3\2\2\2\u059e\u059c"+
@@ -12011,7 +11982,7 @@ public class BallerinaParser extends Parser {
 		"\u03fd\u0407\u0417\u041c\u041f\u0426\u0430\u043c\u043f\u0447\u044a\u044c"+
 		"\u045a\u0464\u046d\u0470\u0473\u047e\u0488\u049a\u04a0\u04ac\u04b7\u04c1"+
 		"\u04c3\u04d2\u04d7\u04df\u04e8\u04f0\u04f5\u04fb\u0507\u050f\u0519\u052c"+
-		"\u054a\u0557\u0574\u0576\u057b\u0580\u0585\u058e\u0594\u059e\u05a4\u05ae"+
+		"\u053a\u0557\u0574\u0576\u057b\u0580\u0585\u058e\u0594\u059e\u05a4\u05ae"+
 		"\u05b3\u05b7\u05bd\u05c8\u05cb\u05d1\u05d4\u05d8\u05e2\u05ec\u05f3\u0601"+
 		"\u060d\u061c\u061f\u0622\u0626\u062f\u0633\u063e\u0642\u0648\u064f\u0653"+
 		"\u065d\u0660\u0663\u0667\u066d\u0674\u0676\u067c\u067e\u0681\u0686\u068a"+
