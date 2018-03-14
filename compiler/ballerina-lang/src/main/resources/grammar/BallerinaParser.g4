@@ -76,8 +76,8 @@ functionDefinition
     ;
 
 lambdaFunction
-    :  FUNCTION LEFT_PARENTHESIS parameterList? RIGHT_PARENTHESIS returnParameters? callableUnitBody
-    ;
+         :  FUNCTION LEFT_PARENTHESIS parameterList? RIGHT_PARENTHESIS returnParameters? callableUnitBody
+         ;
 
 callableUnitSignature
     :   Identifier LEFT_PARENTHESIS parameterList? RIGHT_PARENTHESIS returnParameters?
@@ -387,6 +387,10 @@ finallyClause
 throwStatement
     :   THROW expression SEMICOLON
     ;
+//(VAR)? variableReferenceList ASSIGN
+receiveStatement
+    : RECEIVE LEFT_PARENTHESIS expression COMMA expression RIGHT_PARENTHESIS
+    ;
 
 returnStatement
     :   RETURN expressionList? SEMICOLON
@@ -411,6 +415,7 @@ workerReply
 variableReference
     :   nameReference                                                           # simpleVariableReference
     |   functionInvocation                                                      # functionInvocationReference
+    |   receiveStatement                                                        # receiveStatemenReferance
     |   variableReference index                                                 # mapArrayVariableReference
     |   variableReference field                                                 # fieldVariableReference
     |   variableReference xmlAttrib                                             # xmlAttribVariableReference

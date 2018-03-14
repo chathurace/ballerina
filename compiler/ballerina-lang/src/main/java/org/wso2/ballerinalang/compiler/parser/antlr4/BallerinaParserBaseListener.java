@@ -1060,6 +1060,18 @@ public class BallerinaParserBaseListener implements BallerinaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterReturnStatement(BallerinaParser.ReturnStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1127,6 +1139,18 @@ public class BallerinaParserBaseListener implements BallerinaParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitXmlAttribVariableReference(BallerinaParser.XmlAttribVariableReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReceiveStatemenReferance(BallerinaParser.ReceiveStatemenReferanceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReceiveStatemenReferance(BallerinaParser.ReceiveStatemenReferanceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

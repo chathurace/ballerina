@@ -38,6 +38,7 @@ import org.ballerinalang.util.codegen.Instruction.InstructionCALL;
 import org.ballerinalang.util.codegen.Instruction.InstructionFORKJOIN;
 import org.ballerinalang.util.codegen.Instruction.InstructionIteratorNext;
 import org.ballerinalang.util.codegen.Instruction.InstructionLock;
+import org.ballerinalang.util.codegen.Instruction.InstructionRECEIVE;
 import org.ballerinalang.util.codegen.Instruction.InstructionTCALL;
 import org.ballerinalang.util.codegen.Instruction.InstructionVCALL;
 import org.ballerinalang.util.codegen.Instruction.InstructionWRKSendReceive;
@@ -1441,7 +1442,6 @@ public class ProgramFileReader {
                 case InstructionCodes.BCONST_1:
                 case InstructionCodes.RCONST_NULL:
                 case InstructionCodes.GOTO:
-                case InstructionCodes.THROW:
                 case InstructionCodes.ERRSTORE:
                 case InstructionCodes.NEWMAP:
                     i = codeStream.readInt();
@@ -1661,6 +1661,10 @@ public class ProgramFileReader {
                     funcRefCPEntry = (FunctionRefCPEntry) packageInfo.getCPEntry(funcRefCPIndex);
                     packageInfo.addInstruction(new InstructionCALL(opcode, funcRefCPIndex,
                             funcRefCPEntry.getFunctionInfo(), getArgRegs(codeStream), getArgRegs(codeStream)));
+                    break;
+                case InstructionCodes.RECEIVE:
+                    packageInfo.addInstruction(
+                            new InstructionRECEIVE(opcode, getArgRegs(codeStream), getArgRegs(codeStream)));
                     break;
                 case InstructionCodes.VCALL:
                     int receiverRegIndex = codeStream.readInt();

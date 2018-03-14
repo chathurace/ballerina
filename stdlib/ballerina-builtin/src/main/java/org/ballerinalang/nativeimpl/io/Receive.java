@@ -30,7 +30,7 @@ import org.ballerinalang.workflow.Correlator;
 
 @BallerinaFunction(
         packageName = "ballerina.io",
-        functionName = "receive",
+        functionName = "nreceive",
         args = {@Argument(name = "messageName", type = TypeKind.STRING),
                 @Argument(name = "vars", type = TypeKind.MAP)},
         returnType = {@ReturnType(type = TypeKind.STRING)},

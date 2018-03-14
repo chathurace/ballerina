@@ -146,4 +146,4 @@ public native function <Socket socket> closeSocket ();
 @Description {value:"Receives a message to a already started workflow."}
 @Param {value:"messageName: Name of the message to be received."}
 @Return { value:"Payload of the received message"}
-public native function receive (string messageName, map vars) (string);
+public native function nreceive (string messageName, map vars) (string);

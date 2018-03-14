@@ -300,6 +300,28 @@ public class BLangParserListener extends BallerinaParserBaseListener {
         this.pkgBuilder.startLambdaFunctionDef(diagnosticSrc.pkgID);
     }
 
+
+    @Override
+    public void enterReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) {
+        if (ctx.exception != null) {
+            return;
+        }
+        this.pkgBuilder.startReceiveStatement();
+    }
+
+    @Override
+    public void exitReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) {
+        if (ctx.exception != null) {
+            return;
+        }
+        this.pkgBuilder.addReceiveStatement(getCurrentPos(ctx), getWS(ctx));
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+
     @Override
     public void exitLambdaFunction(BallerinaParser.LambdaFunctionContext ctx) {
         if (ctx.exception != null) {

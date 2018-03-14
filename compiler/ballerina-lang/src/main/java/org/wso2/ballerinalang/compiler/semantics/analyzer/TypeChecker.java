@@ -77,6 +77,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangXMLQName;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangXMLQuotedString;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangXMLTextLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.MultiReturnExpr;
+import org.wso2.ballerinalang.compiler.tree.statements.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.types.BLangUserDefinedType;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 import org.wso2.ballerinalang.compiler.util.Name;
@@ -818,6 +819,12 @@ public class TypeChecker extends BLangNodeVisitor {
         checkExpr(intRangeExpression.startExpr, env, Lists.of(symTable.intType));
         checkExpr(intRangeExpression.endExpr, env, Lists.of(symTable.intType));
         resultTypes = Lists.of(new BArrayType(symTable.intType));
+    }
+
+    public void visit(BLangReceive bLangReceive) {
+        checkExpr(bLangReceive.correlationMap, env, Lists.of(symTable.jsonType));
+        checkExpr(bLangReceive.messageName, env, Lists.of(symTable.stringType));
+        resultTypes = Lists.of(new BArrayType(symTable.anyType));
     }
 
     // Private methods
