@@ -24,9 +24,21 @@ import org.ballerinalang.model.values.BString;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContextStore {
+public class InMemoryWorkflowStore implements WorkflowStore {
 
     private static Map<String, Context> store = new HashMap<>();
+
+    private static Map<CorrelationParamsKey, WorkflowState> states = new HashMap<>();
+
+    public void storeState(CorrelationParams correlationParams, WorkflowState state) {
+        CorrelationParamsKey key = new CorrelationParamsKey(correlationParams);
+        states.put(key, state);
+    }
+
+    public WorkflowState getState(CorrelationParams correlationParams) {
+        CorrelationParamsKey key = new CorrelationParamsKey(correlationParams);
+        return states.get(key);
+    }
 
     public static void storeContext(BMap<String, ?> vars, Context context) {
         String varName = "";
@@ -65,6 +77,55 @@ public class ContextStore {
             store.remove(correlationKey);
         }
         return context;
+    }
+
+    class CorrelationParamsKey {
+
+        private CorrelationParams params;
+
+        public CorrelationParamsKey(CorrelationParams params) {
+            this.params = params;
+        }
+
+        public CorrelationParams getParams() {
+            return params;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+
+            if (!(obj instanceof CorrelationParamsKey)) {
+                return false;
+            }
+
+            CorrelationParamsKey o = (CorrelationParamsKey) obj;
+            if (params.getMessageName() == null || o.getParams().getMessageName() == null) {
+                return false;
+            }
+
+            if (!params.getMessageName().equals(o.getParams().getMessageName())) {
+                return false;
+            }
+
+            String varName = params.getCorrelationMap().fieldNames().next();
+            String varValue = params.getCorrelationMap().get(varName).stringValue();
+
+            String ovName = o.getParams().getCorrelationMap().fieldNames().next();
+            String ovValue = o.getParams().getCorrelationMap().get(varName).stringValue();
+
+            if (varName.equals(ovName) && varValue.equals(ovValue)) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            String varName = params.getCorrelationMap().fieldNames().next();
+            String varValue = params.getCorrelationMap().get(varName).stringValue();
+            String codeString = params.getMessageName() + varName + varValue;
+            return codeString.hashCode();
+        }
     }
 
 }

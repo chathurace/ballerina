@@ -18,21 +18,40 @@
 package org.ballerinalang.workflow;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.model.values.BMap;
 
-public class Correlator {
+public class WorkflowState {
 
-    public static void persistState(BMap<String, ?> vars, Context context) {
-        InMemoryWorkflowStore.storeContext(vars, context);
+    private int ip;
+    private Context context;
+    private int retRegIndex;
+
+    public WorkflowState(Context context, int ip, int retRegIndex) {
+        this.context = context;
+        this.ip = ip;
+        this.retRegIndex = retRegIndex;
     }
 
-    public static Context correlate(String var, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(var, true);
+    public int getIp() {
+        return ip;
+    }
+
+    public void setIp(int ip) {
+        this.ip = ip;
+    }
+
+    public Context getContext() {
         return context;
     }
 
-    public static Context correlate(BMap<String, ?> vars, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(vars, true);
-        return context;
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public int getRetRegIndex() {
+        return retRegIndex;
+    }
+
+    public void setRetRegIndex(int retRegIndex) {
+        this.retRegIndex = retRegIndex;
     }
 }

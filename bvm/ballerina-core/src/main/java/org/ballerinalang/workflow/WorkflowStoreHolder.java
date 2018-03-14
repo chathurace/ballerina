@@ -17,22 +17,14 @@
  */
 package org.ballerinalang.workflow;
 
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.model.values.BMap;
+public class WorkflowStoreHolder {
 
-public class Correlator {
+    private static WorkflowStore workflowStore;
 
-    public static void persistState(BMap<String, ?> vars, Context context) {
-        InMemoryWorkflowStore.storeContext(vars, context);
-    }
-
-    public static Context correlate(String var, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(var, true);
-        return context;
-    }
-
-    public static Context correlate(BMap<String, ?> vars, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(vars, true);
-        return context;
+    public static WorkflowStore getWorkflowStore() {
+        if (workflowStore == null) {
+            workflowStore = new InMemoryWorkflowStore();
+        }
+        return workflowStore;
     }
 }

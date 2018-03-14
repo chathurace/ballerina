@@ -17,22 +17,31 @@
  */
 package org.ballerinalang.workflow;
 
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.util.JsonNode;
 
-public class Correlator {
+public class CorrelationParams {
 
-    public static void persistState(BMap<String, ?> vars, Context context) {
-        InMemoryWorkflowStore.storeContext(vars, context);
+    private String messageName;
+    private JsonNode correlationMap;
+
+    public CorrelationParams(String messageName, JsonNode correlationMap) {
+        this.messageName = messageName;
+        this.correlationMap = correlationMap;
     }
 
-    public static Context correlate(String var, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(var, true);
-        return context;
+    public String getMessageName() {
+        return messageName;
     }
 
-    public static Context correlate(BMap<String, ?> vars, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(vars, true);
-        return context;
+    public void setMessageName(String messageName) {
+        this.messageName = messageName;
+    }
+
+    public JsonNode getCorrelationMap() {
+        return correlationMap;
+    }
+
+    public void setCorrelationMap(JsonNode correlationMap) {
+        this.correlationMap = correlationMap;
     }
 }

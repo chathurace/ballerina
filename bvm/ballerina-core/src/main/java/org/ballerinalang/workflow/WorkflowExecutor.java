@@ -26,6 +26,8 @@ import org.ballerinalang.connector.impl.BServerConnectorFuture;
 import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.BTypes;
+import org.ballerinalang.model.util.JsonNode;
+import org.ballerinalang.model.util.StringUtils;
 import org.ballerinalang.model.values.BFloat;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BJSON;
@@ -42,7 +44,9 @@ import org.ballerinalang.util.codegen.attributes.CodeAttributeInfo;
 import org.ballerinalang.util.debugger.Debugger;
 import org.ballerinalang.util.debugger.DebuggerUtil;
 import org.ballerinalang.util.exceptions.BallerinaException;
+import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
 import org.wso2.transport.http.netty.message.HttpCarbonRequest;
+import org.wso2.transport.http.netty.message.HttpMessageDataStreamer;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -50,6 +54,18 @@ import java.util.Map;
 public class WorkflowExecutor {
 
     public static void execute(BWorkflow workflow, BServerConnectorFuture connectorFuture,
+                               Map<String, Object> properties, HTTPCarbonMessage httpCarbonMessage) {
+
+        HttpMessageDataStreamer httpMessageDataStreamer = new HttpMessageDataStreamer(httpCarbonMessage);
+        String payload = StringUtils.getStringFromInputStream(httpMessageDataStreamer.getInputStream());
+        BJSON value = new BJSON(payload);
+        boolean correlated = correlate(workflow, connectorFuture, properties, value);
+        if (!correlated) {
+            startWorkflowInstance(workflow, connectorFuture, properties, value);
+        }
+    }
+
+    private static void startWorkflowInstance(BWorkflow workflow, BServerConnectorFuture connectorFuture,
                                Map<String, Object> properties, BValue... bValues) {
         if (workflow == null) {
             connectorFuture.notifyFailure(new BallerinaException("trying to execute a null resource"));
@@ -156,16 +172,34 @@ public class WorkflowExecutor {
         connectorFuture.notifySuccess();
     }
 
-    public static boolean correlate(BWorkflow workflow, BServerConnectorFuture connectorFuture,
-                                  Map<String, Object> properties, String correlationHeader) {
+    private static boolean correlate(BWorkflow workflow, BServerConnectorFuture connectorFuture,
+                                  Map<String, Object> properties, BJSON payload) {
         if (workflow == null) {
             connectorFuture.notifyFailure(new BallerinaException("Correlating workflow is null"));
             return false;
         }
 
-        Context context = Correlator.correlate(correlationHeader, true);
+        JsonNode correlationVars = payload.value().get("correlationVars");
+        if (correlationVars == null) {
+            return false;
+        }
+
+        JsonNode messageNameNode = payload.value().get("messageName");
+        if (messageNameNode == null) {
+            return false;
+        }
+        String messageName = messageNameNode.stringValue();
+
+        CorrelationParams correlationParams = new CorrelationParams(messageName, correlationVars);
+        WorkflowState state = WorkflowStoreHolder.getWorkflowStore().getState(correlationParams);
+        Context context = state.getContext();
+
         if (context != null) {
-            context.setStartIP((Integer) context.getProperty("ip"));
+            JsonNode processVarsNode = payload.value().get("processVars");
+            BJSON processVars = new BJSON(processVarsNode);
+            context.getControlStack().currentFrame.getRefRegs()[state.getRetRegIndex()] = processVars;
+
+            context.setStartIP(state.getIp());
             BLangVM bLangVM = new BLangVM(context.getProgramFile());
             context.setAsResourceContext();
             context.startTrackWorker();

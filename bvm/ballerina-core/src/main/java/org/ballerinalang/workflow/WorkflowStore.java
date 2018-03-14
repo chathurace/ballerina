@@ -17,22 +17,9 @@
  */
 package org.ballerinalang.workflow;
 
-import org.ballerinalang.bre.Context;
-import org.ballerinalang.model.values.BMap;
+public interface WorkflowStore {
 
-public class Correlator {
+    void storeState(CorrelationParams correlationParams, WorkflowState state);
 
-    public static void persistState(BMap<String, ?> vars, Context context) {
-        InMemoryWorkflowStore.storeContext(vars, context);
-    }
-
-    public static Context correlate(String var, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(var, true);
-        return context;
-    }
-
-    public static Context correlate(BMap<String, ?> vars, boolean delete) {
-        Context context = InMemoryWorkflowStore.getContext(vars, true);
-        return context;
-    }
+    WorkflowState getState(CorrelationParams correlationParams);
 }

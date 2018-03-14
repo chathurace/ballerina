@@ -119,6 +119,10 @@ import org.ballerinalang.util.program.BLangFunctions;
 import org.ballerinalang.util.transactions.LocalTransactionInfo;
 import org.ballerinalang.util.transactions.TransactionConstants;
 import org.ballerinalang.util.workflow.WorkflowUtils;
+import org.ballerinalang.workflow.CorrelationParams;
+import org.ballerinalang.workflow.WorkflowState;
+import org.ballerinalang.workflow.WorkflowStore;
+import org.ballerinalang.workflow.WorkflowStoreHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerinalang.util.Lists;
@@ -2796,13 +2800,12 @@ public class BLangVM {
     }
 
     private void invokeReceive(int[] argRegs, int[] retRegs) {
-//        BRefType vars =  controlStack.currentFrame.getRefRegs()[argRegs[1]];
-//        controlStack.currentFrame.refRegs[retRegs[0]] = vars;
-        String messagename = controlStack.currentFrame.getStringRegs()[argRegs[0]];
-        BRefType correlationMap = controlStack.currentFrame.refRegs[argRegs[1]];
-        WorkflowUtils.persistStack(controlStack, messagename, correlationMap, ip);
-//        BJSON testResponse = new BJSON("{\"status\":\"approved\"}");
-//        controlStack.currentFrame.refRegs[retRegs[0]] = testResponse;
+        String messageName = controlStack.currentFrame.getStringRegs()[argRegs[0]];
+        BRefType<JsonNode> correlationMap = controlStack.currentFrame.refRegs[argRegs[1]];
+
+        CorrelationParams params = new CorrelationParams(messageName, correlationMap.value());
+        WorkflowState state = new WorkflowState(context, ip, retRegs[0]);
+        WorkflowStoreHolder.getWorkflowStore().storeState(params, state);
         ip = -1;
     }
 

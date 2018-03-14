@@ -17,12 +17,15 @@
  */
 package org.ballerinalang.runtime.threadpool;
 
+import org.ballerinalang.bre.bvm.BLangVM;
 import org.ballerinalang.connector.impl.BServerConnectorFuture;
 import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.model.util.StringUtils;
 import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.workflow.WorkflowExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
 import org.wso2.transport.http.netty.message.HttpMessageDataStreamer;
 
@@ -47,14 +50,6 @@ public class BallerinaWorkflowThread implements Runnable {
 
     @Override
     public void run() {
-        String correlationHeader = httpCarbonMessage.getHeader("Correlation");
-        HttpMessageDataStreamer httpMessageDataStreamer = new HttpMessageDataStreamer(httpCarbonMessage);
-        String payload = StringUtils.getStringFromInputStream(httpMessageDataStreamer.getInputStream());
-        System.out.println("PAYLOAD: " + payload);
-        BJSON value = new BJSON(payload);
-        boolean correlated = WorkflowExecutor.correlate(workflow, connectorFuture, properties, correlationHeader);
-        if (!correlated) {
-            WorkflowExecutor.execute(workflow, connectorFuture, properties, value);
-        }
+        WorkflowExecutor.execute(workflow, connectorFuture, properties, httpCarbonMessage);
     }
 }
