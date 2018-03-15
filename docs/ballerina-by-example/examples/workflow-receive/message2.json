@@ -1,0 +1,5 @@
+{
+"messageName":"internalApproval",
+"correlationVars":{"applicationId":"A500"},
+"processVars":{"status":"approved", "comments":"provide docs within 7 days"}
+}

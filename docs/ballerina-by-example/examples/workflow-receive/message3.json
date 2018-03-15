@@ -1,0 +1,5 @@
+{
+"messageName":"customerCredit",
+"correlationVars":{"customerId":"smith"},
+"processVars":{"amount":12000}
+}
