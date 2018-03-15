@@ -19,6 +19,9 @@ package org.wso2.ballerinalang.programfile;
 
 import java.util.Objects;
 
+/**
+ * {@code WorkflowInfo} represents a workflow in a Ballerina program.
+ */
 public class WorkflowInfo extends CallableUnitInfo {
 
     public int[] paramNameCPIndexes;

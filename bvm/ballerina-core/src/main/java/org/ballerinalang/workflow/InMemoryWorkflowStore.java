@@ -24,6 +24,9 @@ import org.ballerinalang.model.values.BString;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents the in memory workflow store.
+ */
 public class InMemoryWorkflowStore implements WorkflowStore {
 
     private static Map<String, Context> store = new HashMap<>();

@@ -17,6 +17,9 @@
  */
 package org.ballerinalang.workflow;
 
+/**
+ * Represents the workflow store.
+ */
 public interface WorkflowStore {
 
     void storeState(CorrelationParams correlationParams, WorkflowState state);

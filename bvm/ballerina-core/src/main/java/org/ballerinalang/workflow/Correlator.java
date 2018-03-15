@@ -20,6 +20,9 @@ package org.ballerinalang.workflow;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.values.BMap;
 
+/**
+ * Responsible for correlation.
+ */
 public class Correlator {
 
     public static void persistState(BMap<String, ?> vars, Context context) {

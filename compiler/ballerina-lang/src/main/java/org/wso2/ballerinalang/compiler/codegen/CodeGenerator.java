@@ -2038,7 +2038,8 @@ public class CodeGenerator extends BLangNodeVisitor {
         workflowInfo.paramTypes = workflowType.paramTypes.toArray(new BType[0]);
         setParameterNames(workflowNode, workflowInfo);
         workflowInfo.retParamTypes = new BType[0];
-        workflowInfo.signatureCPIndex = addUTF8CPEntry(currentPkgInfo, generateFunctionSig(workflowInfo.paramTypes, workflowInfo.retParamTypes));
+        workflowInfo.signatureCPIndex = addUTF8CPEntry(currentPkgInfo,
+                generateFunctionSig(workflowInfo.paramTypes, workflowInfo.retParamTypes));
         // Add worker info
         int workerNameCPIndex = addUTF8CPEntry(currentPkgInfo, "default");
         workflowInfo.defaultWorkerInfo = new WorkerInfo(workerNameCPIndex, "default");

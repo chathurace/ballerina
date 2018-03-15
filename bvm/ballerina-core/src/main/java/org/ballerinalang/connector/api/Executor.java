@@ -69,7 +69,8 @@ public class Executor {
         return connectorFuture;
     }
 
-    public static ConnectorFuture submit(BWorkflow workflow, Map<String, Object> properties, HTTPCarbonMessage httpCarbonMessage, BValue... values) {
+    public static ConnectorFuture submit(BWorkflow workflow, Map<String, Object> properties,
+            HTTPCarbonMessage httpCarbonMessage, BValue... values) {
         BServerConnectorFuture connectorFuture = new BServerConnectorFuture();
         ThreadPoolFactory.getInstance().getExecutor().
                 execute(new BallerinaWorkflowThread(workflow, connectorFuture, properties, values, httpCarbonMessage));

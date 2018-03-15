@@ -19,6 +19,9 @@ package org.ballerinalang.workflow;
 
 import org.ballerinalang.model.util.JsonNode;
 
+/**
+ * Represents the Correlation parameters for workflow.
+ */
 public class CorrelationParams {
 
     private String messageName;

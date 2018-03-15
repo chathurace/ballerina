@@ -22,6 +22,9 @@ import org.ballerinalang.connector.api.ConnectorFutureListener;
 import org.ballerinalang.model.values.BValue;
 import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
 
+/**
+ * {@link ConnectorFutureListener} future listener implementation for workflow.
+ */
 public class HttpWorkflowFutureListener implements ConnectorFutureListener {
 
     private HTTPCarbonMessage requestMessage;
