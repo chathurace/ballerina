@@ -17,6 +17,9 @@
  */
 package org.ballerinalang.workflow;
 
+/**
+ * Producer for {@link WorkflowStore}.
+ */
 public class WorkflowStoreHolder {
 
     private static WorkflowStore workflowStore;

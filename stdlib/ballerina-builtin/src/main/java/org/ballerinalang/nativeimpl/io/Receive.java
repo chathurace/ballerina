@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -28,6 +28,9 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.ReturnType;
 import org.ballerinalang.workflow.Correlator;
 
+/**
+ * The receive native function.
+ */
 @BallerinaFunction(
         packageName = "ballerina.io",
         functionName = "nreceive",
@@ -43,7 +46,6 @@ public class Receive extends AbstractNativeFunction {
         String name = getStringArgument(context, 0);
         BMap<String, ?> vars = (BMap<String, ?>) getRefArgument(context, 0);
         String msg = "Waiting for message: " + name;
-        System.out.println(msg);
         String result = msg;
 
         Correlator.persistState(vars, context);

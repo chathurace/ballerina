@@ -17,5 +17,8 @@
  */
 package org.ballerinalang.model.tree;
 
+/**
+ * Represents the workflow construct in the AST.
+ */
 public interface WorkflowNode extends TopLevelNode {
 }

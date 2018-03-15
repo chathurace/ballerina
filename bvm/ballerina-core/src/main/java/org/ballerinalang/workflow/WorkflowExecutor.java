@@ -21,7 +21,6 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVM;
 import org.ballerinalang.bre.bvm.ControlStack;
 import org.ballerinalang.bre.bvm.StackFrame;
-import org.ballerinalang.connector.api.Resource;
 import org.ballerinalang.connector.impl.BServerConnectorFuture;
 import org.ballerinalang.connector.impl.BWorkflow;
 import org.ballerinalang.model.types.BType;
@@ -45,16 +44,18 @@ import org.ballerinalang.util.debugger.Debugger;
 import org.ballerinalang.util.debugger.DebuggerUtil;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
-import org.wso2.transport.http.netty.message.HttpCarbonRequest;
 import org.wso2.transport.http.netty.message.HttpMessageDataStreamer;
 
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * The executor for workflow.
+ */
 public class WorkflowExecutor {
 
     public static void execute(BWorkflow workflow, BServerConnectorFuture connectorFuture,
-                               Map<String, Object> properties, HTTPCarbonMessage httpCarbonMessage) {
+            Map<String, Object> properties, HTTPCarbonMessage httpCarbonMessage) {
 
         HttpMessageDataStreamer httpMessageDataStreamer = new HttpMessageDataStreamer(httpCarbonMessage);
         String payload = StringUtils.getStringFromInputStream(httpMessageDataStreamer.getInputStream());
@@ -66,7 +67,7 @@ public class WorkflowExecutor {
     }
 
     private static void startWorkflowInstance(BWorkflow workflow, BServerConnectorFuture connectorFuture,
-                               Map<String, Object> properties, BValue... bValues) {
+            Map<String, Object> properties, BValue... bValues) {
         if (workflow == null) {
             connectorFuture.notifyFailure(new BallerinaException("trying to execute a null resource"));
             return;
@@ -140,8 +141,8 @@ public class WorkflowExecutor {
                 } else if (value instanceof BJSON) {
                     refRegs[refParamCount++] = (BRefType) value;
                 } else {
-                    connectorFuture.notifyFailure(new BallerinaException("unsupported " +
-                            "parameter type for parameter " + value));
+                    connectorFuture.notifyFailure(
+                            new BallerinaException("unsupported " + "parameter type for parameter " + value));
                 }
             }
         }
@@ -173,7 +174,7 @@ public class WorkflowExecutor {
     }
 
     private static boolean correlate(BWorkflow workflow, BServerConnectorFuture connectorFuture,
-                                  Map<String, Object> properties, BJSON payload) {
+            Map<String, Object> properties, BJSON payload) {
         if (workflow == null) {
             connectorFuture.notifyFailure(new BallerinaException("Correlating workflow is null"));
             return false;

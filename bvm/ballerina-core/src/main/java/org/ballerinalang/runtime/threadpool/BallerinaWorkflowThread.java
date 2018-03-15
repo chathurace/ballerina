@@ -17,20 +17,17 @@
  */
 package org.ballerinalang.runtime.threadpool;
 
-import org.ballerinalang.bre.bvm.BLangVM;
 import org.ballerinalang.connector.impl.BServerConnectorFuture;
 import org.ballerinalang.connector.impl.BWorkflow;
-import org.ballerinalang.model.util.StringUtils;
-import org.ballerinalang.model.values.BJSON;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.workflow.WorkflowExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
-import org.wso2.transport.http.netty.message.HttpMessageDataStreamer;
 
 import java.util.Map;
 
+/**
+ * Thread which is responsible for request processing for the workflow.
+ */
 public class BallerinaWorkflowThread implements Runnable {
 
     private BServerConnectorFuture connectorFuture;
@@ -40,7 +37,7 @@ public class BallerinaWorkflowThread implements Runnable {
     private HTTPCarbonMessage httpCarbonMessage;
 
     public BallerinaWorkflowThread(BWorkflow workflow, BServerConnectorFuture connectorFuture,
-                                   Map<String, Object> properties, BValue[] bValues, HTTPCarbonMessage httpCarbonMessage) {
+            Map<String, Object> properties, BValue[] bValues, HTTPCarbonMessage httpCarbonMessage) {
         this.workflow = workflow;
         this.connectorFuture = connectorFuture;
         this.properties = properties;

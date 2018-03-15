@@ -149,7 +149,6 @@ public class HTTPServicesRegistry {
         config.setBindOnStartup(false);
         config.setScheme("https");
         config.setHttp2(false);
-//        config.setKeyStoreFile("/home/wso2/projects/wso2/ballerina-tools/tools-distribution/modules/ballerina/target/ballerina-0.95.8/bre/security/ballerinaKeystore.p12");
         config.setKeyStoreFile("../bre/security/ballerinaKeystore.p12");
         config.setKeyStorePass("ballerina");
         config.setCertPass("ballerina");

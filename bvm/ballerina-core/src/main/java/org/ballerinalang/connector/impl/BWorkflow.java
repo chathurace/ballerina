@@ -19,6 +19,9 @@ package org.ballerinalang.connector.impl;
 
 import org.ballerinalang.util.codegen.WorkflowInfo;
 
+/**
+ * This is the implementation for the {@code BWorkflow} API.
+ */
 public class BWorkflow {
 
     private String basePath = "/wf1";

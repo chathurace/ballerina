@@ -20,6 +20,9 @@ package org.wso2.ballerinalang.compiler.tree;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.WorkflowNode;
 
+/**
+ * Implementation of the {@link WorkflowNode}.
+ */
 public class BLangWorkflow extends BLangInvokableNode implements WorkflowNode {
     @Override
     public NodeKind getKind() {

@@ -19,6 +19,9 @@ package org.ballerinalang.workflow;
 
 import org.ballerinalang.bre.Context;
 
+/**
+ * Represents the state of a Ballerina workflow.
+ */
 public class WorkflowState {
 
     private int ip;
