@@ -54,7 +54,6 @@ import org.ballerinalang.model.values.BNewArray;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStream;
-import org.ballerinalang.model.values.BStreamlet;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BStruct;
@@ -86,7 +85,6 @@ import org.ballerinalang.util.codegen.Instruction.InstructionWRKSendReceive;
 import org.ballerinalang.util.codegen.InstructionCodes;
 import org.ballerinalang.util.codegen.LineNumberInfo;
 import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StreamletInfo;
 import org.ballerinalang.util.codegen.StructFieldInfo;
 import org.ballerinalang.util.codegen.StructInfo;
 import org.ballerinalang.util.codegen.WorkerDataChannelInfo;
@@ -98,7 +96,6 @@ import org.ballerinalang.util.codegen.cpentries.FloatCPEntry;
 import org.ballerinalang.util.codegen.cpentries.FunctionCallCPEntry;
 import org.ballerinalang.util.codegen.cpentries.FunctionRefCPEntry;
 import org.ballerinalang.util.codegen.cpentries.IntegerCPEntry;
-import org.ballerinalang.util.codegen.cpentries.StreamletRefCPEntry;
 import org.ballerinalang.util.codegen.cpentries.StringCPEntry;
 import org.ballerinalang.util.codegen.cpentries.StructureRefCPEntry;
 import org.ballerinalang.util.codegen.cpentries.TypeRefCPEntry;
@@ -177,6 +174,10 @@ public class CPU {
         int callersRetRegIndex;
 
         while (ctx.ip >= 0) {
+            if (ctx.stop) {
+                BLangScheduler.workerDone(ctx);
+                return;
+            }
             if (debugEnabled && debug(ctx)) {
                 return;
             }
@@ -295,12 +296,6 @@ public class CPU {
                     execLoadOpcodes(ctx, sf, opcode, operands);
                     break;
 
-                case InstructionCodes.ISTORE:
-                case InstructionCodes.FSTORE:
-                case InstructionCodes.SSTORE:
-                case InstructionCodes.BSTORE:
-                case InstructionCodes.LSTORE:
-                case InstructionCodes.RSTORE:
                 case InstructionCodes.IASTORE:
                 case InstructionCodes.FASTORE:
                 case InstructionCodes.SASTORE:
@@ -368,7 +363,7 @@ public class CPU {
                     i = operands[0];
                     j = operands[1];
                     if (sf.refRegs[i] == null) {
-                        handleNullRefError(ctx);
+                        sf.refRegs[j] = new BTypeDescValue(BTypes.typeNull);
                         break;
                     }
                     sf.refRegs[j] = new BTypeDescValue(sf.refRegs[i].getType());
@@ -400,12 +395,13 @@ public class CPU {
                 case InstructionCodes.TR_RETRY:
                     i = operands[0];
                     j = operands[1];
-                    retryTransaction(ctx, i, j);
+                    int l = operands[2];
+                    retryTransaction(ctx, i, j, l);
                     break;
                 case InstructionCodes.CALL:
                     callIns = (InstructionCALL) instruction;
                     ctx = BLangFunctions.invokeCallable(callIns.functionInfo, ctx, callIns.argRegs,
-                            callIns.retRegs, false, callIns.async);
+                            callIns.retRegs, false, callIns.flags);
                     if (ctx == null) {
                         return;
                     }
@@ -413,14 +409,14 @@ public class CPU {
                 case InstructionCodes.VCALL:
                     InstructionVCALL vcallIns = (InstructionVCALL) instruction;
                     ctx = invokeVirtualFunction(ctx, vcallIns.receiverRegIndex, vcallIns.functionInfo,
-                            vcallIns.argRegs, vcallIns.retRegs, vcallIns.async);
+                            vcallIns.argRegs, vcallIns.retRegs, vcallIns.flags);
                     if (ctx == null) {
                         return;
                     }
                     break;
                 case InstructionCodes.ACALL:
                     InstructionACALL acallIns = (InstructionACALL) instruction;
-                    ctx = invokeAction(ctx, acallIns.actionName, acallIns.argRegs, acallIns.retRegs, acallIns.async);
+                    ctx = invokeAction(ctx, acallIns.actionName, acallIns.argRegs, acallIns.retRegs, acallIns.flags);
                     if (ctx == null) {
                         return;
                     }
@@ -428,7 +424,7 @@ public class CPU {
                 case InstructionCodes.TCALL:
                     InstructionTCALL tcallIns = (InstructionTCALL) instruction;
                     ctx = BLangFunctions.invokeCallable(tcallIns.transformerInfo, ctx, tcallIns.argRegs,
-                            tcallIns.retRegs, false, tcallIns.async);
+                            tcallIns.retRegs, false, tcallIns.flags);
                     if (ctx == null) {
                         return;
                     }
@@ -532,6 +528,8 @@ public class CPU {
                 case InstructionCodes.JSON2S:
                 case InstructionCodes.JSON2B:
                 case InstructionCodes.NULL2S:
+                case InstructionCodes.IS_ASSIGNABLE:
+                case InstructionCodes.CHECK_CONVERSION:
                     execTypeCastOpcodes(ctx, sf, opcode, operands);
                     break;
 
@@ -650,11 +648,7 @@ public class CPU {
                     typeRefCPEntry = (TypeRefCPEntry) ctx.constPool[cpIndex];
                     StringCPEntry name = (StringCPEntry) ctx.constPool[operands[2]];
                     BStream stream = new BStream(typeRefCPEntry.getType(), name.getValue());
-                    StreamingRuntimeManager.getInstance().addStreamReference(name.getValue(), stream);
                     sf.refRegs[i] = stream;
-                    break;
-                case InstructionCodes.NEWSTREAMLET:
-                    createNewStreamlet(ctx, operands, sf);
                     break;
                 case InstructionCodes.NEW_INT_RANGE:
                     createNewIntRange(operands, sf);
@@ -755,7 +749,7 @@ public class CPU {
     }
 
     private static void execCmpAndBranchOpcodes(WorkerExecutionContext ctx, WorkerData sf, int opcode,
-            int[] operands) {
+                                                int[] operands) {
         int i;
         int j;
         int k;
@@ -871,7 +865,7 @@ public class CPU {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static void execLoadOpcodes(WorkerExecutionContext ctx, WorkerData sf, int opcode, int[] operands) {
         int i;
         int j;
@@ -1182,7 +1176,7 @@ public class CPU {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static void execStoreOpcodes(WorkerExecutionContext ctx, WorkerData sf, int opcode, int[] operands) {
         int i;
         int j;
@@ -1200,36 +1194,6 @@ public class CPU {
         BMap<String, BRefType> bMap;
         BJSON jsonVal;
         switch (opcode) {
-            case InstructionCodes.ISTORE:
-                i = operands[0];
-                lvIndex = operands[1];
-                sf.longRegs[lvIndex] = sf.longRegs[i];
-                break;
-            case InstructionCodes.FSTORE:
-                i = operands[0];
-                lvIndex = operands[1];
-                sf.doubleRegs[lvIndex] = sf.doubleRegs[i];
-                break;
-            case InstructionCodes.SSTORE:
-                i = operands[0];
-                lvIndex = operands[1];
-                sf.stringRegs[lvIndex] = sf.stringRegs[i];
-                break;
-            case InstructionCodes.BSTORE:
-                i = operands[0];
-                lvIndex = operands[1];
-                sf.intRegs[lvIndex] = sf.intRegs[i];
-                break;
-            case InstructionCodes.LSTORE:
-                i = operands[0];
-                lvIndex = operands[1];
-                sf.byteRegs[lvIndex] = sf.byteRegs[i];
-                break;
-            case InstructionCodes.RSTORE:
-                i = operands[0];
-                lvIndex = operands[1];
-                sf.refRegs[lvIndex] = sf.refRegs[i];
-                break;
             case InstructionCodes.IASTORE:
                 i = operands[0];
                 j = operands[1];
@@ -1469,6 +1433,11 @@ public class CPU {
                     bMap.put(sf.stringRegs[j], sf.refRegs[k]);
                 } else if (mapType.getConstrainedType() == BTypes.typeAny ||
                         mapType.getConstrainedType().equals(sf.refRegs[k].getType())) {
+                    bMap.put(sf.stringRegs[j], sf.refRegs[k]);
+                } else if (sf.refRegs[k].getType().getTag() == TypeTags.STRUCT_TAG
+                        && mapType.getConstrainedType().getTag() == TypeTags.STRUCT_TAG
+                        && checkStructEquivalency((BStructType) sf.refRegs[k].getType(),
+                        (BStructType) mapType.getConstrainedType())) {
                     bMap.put(sf.stringRegs[j], sf.refRegs[k]);
                 } else {
                     ctx.setError(BLangVMErrors.createError(ctx,
@@ -1833,7 +1802,7 @@ public class CPU {
         int k;
         int cpIndex; // Index of the constant pool
 
-        BRefType bRefType;
+        BRefType bRefTypeValue;
         TypeRefCPEntry typeRefCPEntry;
 
         switch (opcode) {
@@ -1865,90 +1834,27 @@ public class CPU {
             case InstructionCodes.ANY2I:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
-
-                bRefType = sf.refRegs[i];
-                if (bRefType == null) {
-                    sf.longRegs[j] = 0;
-                    handleTypeCastError(ctx, sf, k, BTypes.typeNull, BTypes.typeInt);
-                } else if (bRefType.getType() == BTypes.typeInt) {
-                    sf.refRegs[k] = null;
-                    sf.longRegs[j] = ((BInteger) bRefType).intValue();
-                } else {
-                    sf.longRegs[j] = 0;
-                    handleTypeCastError(ctx, sf, k, bRefType.getType(), BTypes.typeInt);
-                }
+                sf.longRegs[j] = ((BInteger) sf.refRegs[i]).intValue();
                 break;
             case InstructionCodes.ANY2F:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
-
-                bRefType = sf.refRegs[i];
-                if (bRefType == null) {
-                    sf.doubleRegs[j] = 0;
-                    handleTypeCastError(ctx, sf, k, BTypes.typeNull, BTypes.typeFloat);
-                } else if (bRefType.getType() == BTypes.typeFloat) {
-                    sf.refRegs[k] = null;
-                    sf.doubleRegs[j] = ((BFloat) bRefType).floatValue();
-                } else if (bRefType.getType() == BTypes.typeInt) {
-                    sf.refRegs[k] = null;
-                    sf.doubleRegs[j] = ((BInteger) bRefType).floatValue();
-                } else {
-                    sf.doubleRegs[j] = 0;
-                    handleTypeCastError(ctx, sf, k, bRefType.getType(), BTypes.typeFloat);
-                }
+                sf.doubleRegs[j] = ((BFloat) sf.refRegs[i]).floatValue();
                 break;
             case InstructionCodes.ANY2S:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
-
-                bRefType = sf.refRegs[i];
-                if (bRefType == null) {
-                    sf.stringRegs[j] = STRING_NULL_VALUE;
-                    handleTypeCastError(ctx, sf, k, BTypes.typeNull, BTypes.typeString);
-                } else if (bRefType.getType() == BTypes.typeString) {
-                    sf.refRegs[k] = null;
-                    sf.stringRegs[j] = bRefType.stringValue();
-                } else {
-                    sf.stringRegs[j] = STRING_NULL_VALUE;
-                    handleTypeCastError(ctx, sf, k, bRefType.getType(), BTypes.typeString);
-                }
+                sf.stringRegs[j] = sf.refRegs[i].stringValue();
                 break;
             case InstructionCodes.ANY2B:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
-
-                bRefType = sf.refRegs[i];
-                if (bRefType == null) {
-                    sf.intRegs[j] = 0;
-                    handleTypeCastError(ctx, sf, k, BTypes.typeNull, BTypes.typeBoolean);
-                } else if (bRefType.getType() == BTypes.typeBoolean) {
-                    sf.refRegs[k] = null;
-                    sf.intRegs[j] = ((BBoolean) bRefType).booleanValue() ? 1 : 0;
-                } else {
-                    sf.intRegs[j] = 0;
-                    handleTypeCastError(ctx, sf, k, bRefType.getType(), BTypes.typeBoolean);
-                }
+                    sf.intRegs[j] = ((BBoolean) sf.refRegs[i]).booleanValue() ? 1 : 0;
                 break;
             case InstructionCodes.ANY2L:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
-
-                bRefType = sf.refRegs[i];
-                if (bRefType == null) {
-                    sf.byteRegs[j] = new byte[0];
-                    handleTypeCastError(ctx, sf, k, BTypes.typeNull, BTypes.typeBlob);
-                } else if (bRefType.getType() == BTypes.typeBlob) {
-                    sf.refRegs[k] = null;
-                    sf.byteRegs[j] = ((BBlob) bRefType).blobValue();
-                } else {
-                    sf.byteRegs[j] = new byte[0];
-                    handleTypeCastError(ctx, sf, k, bRefType.getType(), BTypes.typeBlob);
-                }
+                    sf.byteRegs[j] = ((BBlob) sf.refRegs[i]).blobValue();
                 break;
             case InstructionCodes.ANY2JSON:
                 handleAnyToRefTypeCast(ctx, sf, operands, BTypes.typeJSON);
@@ -1965,7 +1871,7 @@ public class CPU {
             case InstructionCodes.ANY2DT:
                 handleAnyToRefTypeCast(ctx, sf, operands, BTypes.typeTable);
                 break;
-            case InstructionCodes.ANYSTM:
+            case InstructionCodes.ANY2STM:
                 handleAnyToRefTypeCast(ctx, sf, operands, BTypes.typeStream);
                 break;
             case InstructionCodes.ANY2E:
@@ -1975,20 +1881,28 @@ public class CPU {
                 i = operands[0];
                 cpIndex = operands[1];
                 j = operands[2];
-                k = operands[3];
                 typeRefCPEntry = (TypeRefCPEntry) ctx.constPool[cpIndex];
 
-                bRefType = sf.refRegs[i];
+                bRefTypeValue = sf.refRegs[i];
 
-                if (bRefType == null) {
+                if (bRefTypeValue == null) {
                     sf.refRegs[j] = null;
-                    sf.refRegs[k] = null;
-                } else if (checkCast(bRefType, typeRefCPEntry.getType())) {
+                } else if (checkCast(bRefTypeValue, typeRefCPEntry.getType())) {
                     sf.refRegs[j] = sf.refRegs[i];
-                    sf.refRegs[k] = null;
                 } else {
-                    sf.refRegs[j] = null;
-                    handleTypeCastError(ctx, sf, k, bRefType.getType(), typeRefCPEntry.getType());
+                    handleTypeCastError(ctx, sf, j, bRefTypeValue.getType(), typeRefCPEntry.getType());
+                }
+                break;
+            case InstructionCodes.IS_ASSIGNABLE:
+                i = operands[0];
+                cpIndex = operands[1];
+                j = operands[2];
+                typeRefCPEntry = (TypeRefCPEntry) ctx.constPool[cpIndex];
+                bRefTypeValue = sf.refRegs[i];
+                if (isAssignable(bRefTypeValue, typeRefCPEntry.getType())) {
+                    sf.intRegs[j] = 1;
+                } else {
+                    sf.intRegs[j] = 0;
                 }
                 break;
             case InstructionCodes.NULL2JSON:
@@ -2016,6 +1930,12 @@ public class CPU {
                 j = operands[1];
                 sf.stringRegs[j] = null;
                 break;
+            case InstructionCodes.CHECK_CONVERSION:
+                i = operands[0];
+                j = operands[1];
+                bRefTypeValue = sf.refRegs[i];
+                sf.refRegs[j] = JSONUtils.convertUnionTypeToJSON(bRefTypeValue);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -2023,7 +1943,7 @@ public class CPU {
 
     @SuppressWarnings("rawtypes")
     private static void execTypeConversionOpcodes(WorkerExecutionContext ctx, WorkerData sf, int opcode,
-            int[] operands) {
+                                                  int[] operands) {
         int i;
         int j;
         int k;
@@ -2074,49 +1994,39 @@ public class CPU {
             case InstructionCodes.S2I:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
 
                 str = sf.stringRegs[i];
                 if (str == null) {
-                    sf.longRegs[j] = 0;
-                    handleTypeConversionError(ctx, sf, k, null, TypeConstants.INT_TNAME);
+                    handleTypeConversionError(ctx, sf, j, null, TypeConstants.INT_TNAME);
                     break;
                 }
 
                 try {
-                    sf.longRegs[j] = Long.parseLong(str);
-                    sf.refRegs[k] = null;
+                    sf.refRegs[j] = new BInteger(Long.parseLong(str));
                 } catch (NumberFormatException e) {
-                    sf.longRegs[j] = 0;
-                    handleTypeConversionError(ctx, sf, k, TypeConstants.STRING_TNAME, TypeConstants.INT_TNAME);
+                    handleTypeConversionError(ctx, sf, j, TypeConstants.STRING_TNAME, TypeConstants.INT_TNAME);
                 }
                 break;
             case InstructionCodes.S2F:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
 
                 str = sf.stringRegs[i];
                 if (str == null) {
-                    sf.doubleRegs[j] = 0;
-                    handleTypeConversionError(ctx, sf, k, null, TypeConstants.FLOAT_TNAME);
+                    handleTypeConversionError(ctx, sf, j, null, TypeConstants.FLOAT_TNAME);
                     break;
                 }
 
                 try {
-                    sf.doubleRegs[j] = Double.parseDouble(str);
-                    sf.refRegs[k] = null;
+                    sf.refRegs[j] = new BFloat(Double.parseDouble(str));
                 } catch (NumberFormatException e) {
-                    sf.doubleRegs[j] = 0;
-                    handleTypeConversionError(ctx, sf, k, TypeConstants.STRING_TNAME, TypeConstants.FLOAT_TNAME);
+                    handleTypeConversionError(ctx, sf, j, TypeConstants.STRING_TNAME, TypeConstants.FLOAT_TNAME);
                 }
                 break;
             case InstructionCodes.S2B:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
                 sf.intRegs[j] = Boolean.parseBoolean(sf.stringRegs[i]) ? 1 : 0;
-                sf.refRegs[k] = null;
                 break;
             case InstructionCodes.S2JSON:
                 i = operands[0];
@@ -2142,7 +2052,6 @@ public class CPU {
             case InstructionCodes.DT2XML:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
 
                 bRefType = sf.refRegs[i];
                 if (bRefType == null) {
@@ -2152,16 +2061,14 @@ public class CPU {
 
                 try {
                     sf.refRegs[j] = XMLUtils.tableToXML((BTable) bRefType, ctx.isInTransaction());
-                    sf.refRegs[k] = null;
                 } catch (Exception e) {
                     sf.refRegs[j] = null;
-                    handleTypeConversionError(ctx, sf, k, TypeConstants.TABLE_TNAME, TypeConstants.XML_TNAME);
+                    handleTypeConversionError(ctx, sf, j, TypeConstants.TABLE_TNAME, TypeConstants.XML_TNAME);
                 }
                 break;
             case InstructionCodes.DT2JSON:
                 i = operands[0];
                 j = operands[1];
-                k = operands[2];
 
                 bRefType = sf.refRegs[i];
                 if (bRefType == null) {
@@ -2171,10 +2078,8 @@ public class CPU {
 
                 try {
                     sf.refRegs[j] = JSONUtils.toJSON((BTable) bRefType, ctx.isInTransaction());
-                    sf.refRegs[k] = null;
                 } catch (Exception e) {
-                    sf.refRegs[j] = null;
-                    handleTypeConversionError(ctx, sf, k, TypeConstants.TABLE_TNAME, TypeConstants.XML_TNAME);
+                    handleTypeConversionError(ctx, sf, j, TypeConstants.TABLE_TNAME, TypeConstants.XML_TNAME);
                 }
                 break;
             case InstructionCodes.T2MAP:
@@ -2322,7 +2227,7 @@ public class CPU {
     }
 
     private static void execXMLCreationOpcodes(WorkerExecutionContext ctx, WorkerData sf, int opcode,
-            int[] operands) {
+                                               int[] operands) {
         int i;
         int j;
         int k;
@@ -2534,18 +2439,14 @@ public class CPU {
             BType targetType) {
         int i = operands[0];
         int j = operands[1];
-        int k = operands[2];
 
         BRefType bRefType = sf.refRegs[i];
         if (bRefType == null) {
             sf.refRegs[j] = null;
-            sf.refRegs[k] = null;
         } else if (bRefType.getType() == targetType) {
             sf.refRegs[j] = bRefType;
-            sf.refRegs[k] = null;
         } else {
-            sf.refRegs[j] = null;
-            handleTypeCastError(ctx, sf, k, bRefType.getType(), targetType);
+            handleTypeCastError(ctx, sf, j, bRefType.getType(), targetType);
         }
     }
 
@@ -2603,22 +2504,8 @@ public class CPU {
         sf.refRegs[i] = new BStruct(structInfo.getType());
     }
 
-    private static void createNewStreamlet(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
-        int cpIndex = operands[0];
-        int i = operands[1];
-        StreamletRefCPEntry streamletRefCPEntry = (StreamletRefCPEntry) ctx.constPool[cpIndex];
-        StreamletInfo streamletInfo = (StreamletInfo) streamletRefCPEntry.getStreamletInfo();
-        BStreamlet streamlet = new BStreamlet(streamletInfo.getType());
-        streamlet.setSiddhiApp(streamletInfo.getSiddhiQuery());
-        streamlet.setStreamIdsAsString(streamletInfo.getStreamIdsAsString());
-        StreamingRuntimeManager.getInstance().createSiddhiAppRuntime(streamlet);
-        StreamingRuntimeManager.getInstance().registerSubscriberForTopics(streamlet.getStreamSpecificInputHandlerMap(),
-                                                                          streamletInfo.getStreamIdsAsString());
-        sf.refRegs[i] = streamlet;
-    }
-
     private static void beginTransaction(WorkerExecutionContext ctx, int transactionBlockId, int retryCountRegIndex,
-            int committedFuncIndex, int abortedFuncIndex) {
+                                         int committedFuncIndex, int abortedFuncIndex) {
         //If global tx enabled, it is managed via transaction coordinator. Otherwise it is managed locally without
         //any interaction with the transaction coordinator.
         boolean isGlobalTransactionEnabled = ctx.getGlobalTransactionEnabled();
@@ -2678,10 +2565,19 @@ public class CPU {
         localTransactionInfo.beginTransactionBlock(transactionBlockId, retryCount);
     }
 
-    private static void retryTransaction(WorkerExecutionContext ctx, int transactionBlockId, int startOfAbortIP) {
+    private static void retryTransaction(WorkerExecutionContext ctx, int transactionBlockId, int startOfAbortIP,
+                                         int startOfNoThrowEndIP) {
         LocalTransactionInfo localTransactionInfo = ctx.getLocalTransactionInfo();
-        if (localTransactionInfo.isRetryPossible(transactionBlockId)) {
-            ctx.ip = startOfAbortIP;
+        if (!localTransactionInfo.isRetryPossible(transactionBlockId)) {
+            if (ctx.getError() == null) {
+                ctx.ip = startOfNoThrowEndIP;
+            } else {
+                if (BLangVMErrors.TRANSACTION_ERROR.equals(ctx.getError().getStringField(0))) {
+                    ctx.ip = startOfNoThrowEndIP;
+                } else {
+                    ctx.ip = startOfAbortIP;
+                }
+            }
         }
         localTransactionInfo.incrementCurrentRetryCount(transactionBlockId);
     }
@@ -2773,7 +2669,7 @@ public class CPU {
 
     private static WorkerExecutionContext invokeVirtualFunction(WorkerExecutionContext ctx, int receiver,
                                                                 FunctionInfo virtualFuncInfo, int[] argRegs,
-                                                                int[] retRegs, boolean async) {
+                                                                int[] retRegs, int flags) {
         BStruct structVal = (BStruct) ctx.workerLocal.refRegs[receiver];
         if (structVal == null) {
             ctx.setError(BLangVMErrors.createNullRefException(ctx));
@@ -2784,11 +2680,11 @@ public class CPU {
         StructInfo structInfo = structVal.getType().structInfo;
         AttachedFunctionInfo attachedFuncInfo = structInfo.funcInfoEntries.get(virtualFuncInfo.getName());
         FunctionInfo concreteFuncInfo = attachedFuncInfo.functionInfo;
-        return BLangFunctions.invokeCallable(concreteFuncInfo, ctx, argRegs, retRegs, false, async);
+        return BLangFunctions.invokeCallable(concreteFuncInfo, ctx, argRegs, retRegs, false, flags);
     }
 
     private static WorkerExecutionContext invokeAction(WorkerExecutionContext ctx, String actionName, int[] argRegs,
-                                                       int[] retRegs, boolean async) {
+                                                       int[] retRegs, int flags) {
         BConnector connector = (BConnector) ctx.workerLocal.refRegs[argRegs[0]];
         if (connector == null) {
             ctx.setError(BLangVMErrors.createNullRefException(ctx));
@@ -2800,7 +2696,7 @@ public class CPU {
         ActionInfo actionInfo = ctx.programFile.getPackageInfo(actualCon.getPackagePath())
                 .getConnectorInfo(actualCon.getName()).getActionInfo(actionName);
 
-        return BLangFunctions.invokeCallable(actionInfo, ctx, argRegs, retRegs, false, async);
+        return BLangFunctions.invokeCallable(actionInfo, ctx, argRegs, retRegs, false, flags);
     }
 
     @SuppressWarnings("rawtypes")
@@ -2941,35 +2837,95 @@ public class CPU {
         return ctx.respCtx.signal(new WorkerSignal(ctx, SignalType.RETURN, ctx.workerResult));
     }
 
-    private static boolean checkCast(BValue sourceValue, BType targetType) {
-        BType sourceType = sourceValue.getType();
+    private static boolean isAssignable(BValue rhsValue, BType lhsType) {
+        if (rhsValue == null) {
+            return false;
+        }
 
-        if (sourceType.equals(targetType)) {
+        BType rhsType = rhsValue.getType();
+        if (rhsType.equals(lhsType)) {
+            return true;
+        } else if (rhsType.getTag() == TypeTags.INT_TAG &&
+                (lhsType.getTag() == TypeTags.JSON_TAG || lhsType.getTag() == TypeTags.FLOAT_TAG)) {
+            return true;
+        } else if (rhsType.getTag() == TypeTags.FLOAT_TAG && lhsType.getTag() == TypeTags.JSON_TAG) {
+            return true;
+        } else if (rhsType.getTag() == TypeTags.STRING_TAG && lhsType.getTag() == TypeTags.JSON_TAG) {
+            return true;
+        } else if (rhsType.getTag() == TypeTags.BOOLEAN_TAG && lhsType.getTag() == TypeTags.JSON_TAG) {
             return true;
         }
 
-        if (sourceType.getTag() == TypeTags.STRUCT_TAG && targetType.getTag() == TypeTags.STRUCT_TAG) {
-            return checkStructEquivalency((BStructType) sourceType, (BStructType) targetType);
-
+        // if lhs type is JSON
+        if (lhsType.getTag() == TypeTags.JSON_TAG && getElementType(rhsType).getTag() == TypeTags.JSON_TAG) {
+            return checkJSONCast(((BJSON) rhsValue).value(), rhsType, lhsType);
         }
 
-        if (targetType.getTag() == TypeTags.ANY_TAG) {
+        if (rhsType.getTag() == TypeTags.STRUCT_TAG && lhsType.getTag() == TypeTags.STRUCT_TAG) {
+            return checkStructEquivalency((BStructType) rhsType, (BStructType) lhsType);
+        }
+
+        if (lhsType.getTag() == TypeTags.ANY_TAG) {
+            return true;
+        }
+
+        // Array casting
+        if (lhsType.getTag() == TypeTags.ARRAY_TAG || rhsType.getTag() == TypeTags.ARRAY_TAG) {
+            return checkArrayCast(rhsType, lhsType);
+        }
+
+        // Check MAP casting
+        if (rhsType.getTag() == TypeTags.MAP_TAG && lhsType.getTag() == TypeTags.MAP_TAG) {
+            return checkMapCast(rhsType, lhsType);
+        }
+
+        // This doesn't compare constraints as there is a requirement to be able to return raw table type and assign
+        // it to a constrained table reference.
+        if (rhsType.getTag() == TypeTags.TABLE_TAG && lhsType.getTag() == TypeTags.TABLE_TAG) {
+            return true;
+        }
+
+        if (rhsType.getTag() == TypeTags.STREAM_TAG && lhsType.getTag() == TypeTags.STREAM_TAG) {
+            return true;
+        }
+
+        if (rhsType.getTag() == TypeTags.FUNCTION_POINTER_TAG &&
+                lhsType.getTag() == TypeTags.FUNCTION_POINTER_TAG) {
+            return true;
+        }
+
+        // TODO Union types, tuple types
+        return false;
+    }
+
+    private static boolean checkCast(BValue rhsValue, BType lhsType) {
+        BType rhsType = rhsValue.getType();
+
+        if (rhsType.equals(lhsType)) {
+            return true;
+        }
+
+        if (rhsType.getTag() == TypeTags.STRUCT_TAG && lhsType.getTag() == TypeTags.STRUCT_TAG) {
+            return checkStructEquivalency((BStructType) rhsType, (BStructType) lhsType);
+        }
+
+        if (lhsType.getTag() == TypeTags.ANY_TAG) {
             return true;
         }
 
         // Check JSON casting
-        if (getElementType(sourceType).getTag() == TypeTags.JSON_TAG) {
-            return checkJSONCast(((BJSON) sourceValue).value(), sourceType, targetType);
+        if (getElementType(rhsType).getTag() == TypeTags.JSON_TAG) {
+            return checkJSONCast(((BJSON) rhsValue).value(), rhsType, lhsType);
         }
 
         // Array casting
-        if (targetType.getTag() == TypeTags.ARRAY_TAG || sourceType.getTag() == TypeTags.ARRAY_TAG) {
-            return checkArrayCast(sourceType, targetType);
+        if (lhsType.getTag() == TypeTags.ARRAY_TAG || rhsType.getTag() == TypeTags.ARRAY_TAG) {
+            return checkArrayCast(rhsType, lhsType);
         }
 
         // Check MAP casting
-        if (sourceType.getTag() == TypeTags.MAP_TAG && targetType.getTag() == TypeTags.MAP_TAG) {
-            return checkMapCast(sourceType, targetType);
+        if (rhsType.getTag() == TypeTags.MAP_TAG && lhsType.getTag() == TypeTags.MAP_TAG) {
+            return checkMapCast(rhsType, lhsType);
         }
 
         return false;
@@ -3064,7 +3020,7 @@ public class CPU {
         BStructType.AttachedFunction[] lhsFuncs = lhsType.getAttachedFunctions();
         BStructType.AttachedFunction[] rhsFuncs = rhsType.getAttachedFunctions();
         for (BStructType.AttachedFunction lhsFunc : lhsFuncs) {
-            if (lhsFunc == lhsType.initializer) {
+            if (lhsFunc == lhsType.initializer || lhsFunc == lhsType.defaultsValuesInitFunc) {
                 continue;
             }
 
@@ -3104,7 +3060,7 @@ public class CPU {
         BStructType.AttachedFunction[] lhsFuncs = lhsType.getAttachedFunctions();
         BStructType.AttachedFunction[] rhsFuncs = rhsType.getAttachedFunctions();
         for (BStructType.AttachedFunction lhsFunc : lhsFuncs) {
-            if (lhsFunc == lhsType.initializer) {
+            if (lhsFunc == lhsType.initializer || lhsFunc == lhsType.defaultsValuesInitFunc) {
                 continue;
             }
 
@@ -3184,7 +3140,6 @@ public class CPU {
     private static void castJSONToInt(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
         int i = operands[0];
         int j = operands[1];
-        int k = operands[2];
 
         BJSON jsonValue = (BJSON) sf.refRegs[i];
         if (jsonValue == null) {
@@ -3205,18 +3160,15 @@ public class CPU {
 
         if (jsonNode.isLong()) {
             sf.longRegs[j] = jsonNode.longValue();
-            sf.refRegs[k] = null;
             return;
         }
 
-        sf.longRegs[j] = 0;
-        handleTypeCastError(ctx, sf, k, JSONUtils.getTypeName(jsonNode), TypeConstants.INT_TNAME);
+//        handleTypeCastError(ctx, sf, j, JSONUtils.getTypeName(jsonNode), TypeConstants.INT_TNAME);
     }
 
     private static void castJSONToFloat(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
         int i = operands[0];
         int j = operands[1];
-        int k = operands[2];
 
         BJSON jsonValue = (BJSON) sf.refRegs[i];
         if (jsonValue == null) {
@@ -3237,18 +3189,16 @@ public class CPU {
 
         if (jsonNode.isDouble()) {
             sf.doubleRegs[j] = jsonNode.doubleValue();
-            sf.refRegs[k] = null;
             return;
         }
 
         sf.doubleRegs[j] = 0;
-        handleTypeCastError(ctx, sf, k, JSONUtils.getTypeName(jsonNode), TypeConstants.FLOAT_TNAME);
+//        handleTypeCastError(ctx, sf, j, JSONUtils.getTypeName(jsonNode), TypeConstants.FLOAT_TNAME);
     }
 
     private static void castJSONToString(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
         int i = operands[0];
         int j = operands[1];
-        int k = operands[2];
 
         BJSON jsonValue = (BJSON) sf.refRegs[i];
         if (jsonValue == null) {
@@ -3270,18 +3220,16 @@ public class CPU {
 
         if (jsonNode.isString()) {
             sf.stringRegs[j] = jsonNode.stringValue();
-            sf.refRegs[k] = null;
             return;
         }
 
         sf.stringRegs[j] = STRING_NULL_VALUE;
-        handleTypeCastError(ctx, sf, k, JSONUtils.getTypeName(jsonNode), TypeConstants.STRING_TNAME);
+//        handleTypeCastError(ctx, sf, k, JSONUtils.getTypeName(jsonNode), TypeConstants.STRING_TNAME);
     }
 
     private static void castJSONToBoolean(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
         int i = operands[0];
         int j = operands[1];
-        int k = operands[2];
 
         BJSON jsonValue = (BJSON) sf.refRegs[i];
         if (jsonValue == null) {
@@ -3302,13 +3250,12 @@ public class CPU {
 
         if (jsonNode.isBoolean()) {
             sf.intRegs[j] = jsonNode.booleanValue() ? 1 : 0;
-            sf.refRegs[k] = null;
             return;
         }
 
         // Reset the value in the case of an error;
         sf.intRegs[j] = 0;
-        handleTypeCastError(ctx, sf, k, JSONUtils.getTypeName(jsonNode), TypeConstants.BOOLEAN_TNAME);
+//        handleTypeCastError(ctx, sf, k, JSONUtils.getTypeName(jsonNode), TypeConstants.BOOLEAN_TNAME);
     }
 
     private static boolean checkJSONEquivalency(JsonNode json, BJSONType sourceType, BJSONType targetType) {
@@ -3436,7 +3383,6 @@ public class CPU {
     private static void convertStructToJSON(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
         int i = operands[0];
         int j = operands[1];
-        int k = operands[2];
 
         BStruct bStruct = (BStruct) sf.refRegs[i];
         if (bStruct == null) {
@@ -3447,10 +3393,9 @@ public class CPU {
         try {
             sf.refRegs[j] = JSONUtils.convertStructToJSON(bStruct);
         } catch (Exception e) {
-            sf.refRegs[j] = null;
             String errorMsg = "cannot convert '" + bStruct.getType() + "' to type '" + BTypes.typeJSON + "': " +
                     e.getMessage();
-            handleTypeConversionError(ctx, sf, k, errorMsg);
+            handleTypeConversionError(ctx, sf, j, errorMsg);
         }
     }
 
@@ -3459,7 +3404,6 @@ public class CPU {
         int i = operands[0];
         int cpIndex = operands[1];
         int j = operands[2];
-        int k = operands[3];
 
         TypeRefCPEntry typeRefCPEntry = (TypeRefCPEntry) ctx.constPool[cpIndex];
         BMap<String, BValue> bMap = (BMap<String, BValue>) sf.refRegs[i];
@@ -3550,20 +3494,18 @@ public class CPU {
                 sf.refRegs[j] = null;
                 String errorMsg = "cannot convert '" + bMap.getType() + "' to type '" + structType + ": " +
                         e.getMessage();
-                handleTypeConversionError(ctx, sf, k, errorMsg);
+                handleTypeConversionError(ctx, sf, j, errorMsg);
                 return;
             }
         }
 
         sf.refRegs[j] = bStruct;
-        sf.refRegs[k] = null;
     }
 
     private static void convertJSONToStruct(WorkerExecutionContext ctx, int[] operands, WorkerData sf) {
         int i = operands[0];
         int cpIndex = operands[1];
         int j = operands[2];
-        int k = operands[3];
 
         TypeRefCPEntry typeRefCPEntry = (TypeRefCPEntry) ctx.constPool[cpIndex];
         BJSON bjson = (BJSON) sf.refRegs[i];
@@ -3574,12 +3516,10 @@ public class CPU {
 
         try {
             sf.refRegs[j] = JSONUtils.convertJSONToStruct(bjson, (BStructType) typeRefCPEntry.getType());
-            sf.refRegs[k] = null;
         } catch (Exception e) {
-            sf.refRegs[j] = null;
             String errorMsg = "cannot convert '" + TypeConstants.JSON_TNAME + "' to type '" +
                     typeRefCPEntry.getType() + "': " + e.getMessage();
-            handleTypeConversionError(ctx, sf, k, errorMsg);
+            handleTypeConversionError(ctx, sf, j, errorMsg);
         }
     }
 

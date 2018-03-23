@@ -31,43 +31,27 @@ enum HttpOperation {
 }
 
 // makes the actual endpoints call according to the http operation passed in.
-public function invokeEndpoint (string path, Request|null outboundRequest, Request|null inboundRequest,
+public function invokeEndpoint (string path, Request outRequest,
                                 HttpOperation requestAction, HttpClient httpClient) returns Response|HttpConnectorError {
-    match outboundRequest {
-        Request outRequest => {
-            if (HttpOperation.GET == requestAction) {
-                return httpClient.get(path, outRequest);
-            } else if (HttpOperation.POST == requestAction) {
-                return httpClient.post(path, outRequest);
-            } else if (HttpOperation.OPTIONS == requestAction) {
-                return httpClient.options(path, outRequest);
-            } else if (HttpOperation.PUT == requestAction) {
-                return httpClient.put(path, outRequest);
-            } else if (HttpOperation.DELETE == requestAction) {
-                return httpClient.delete(path, outRequest);
-            } else if (HttpOperation.PATCH == requestAction) {
-                return httpClient.patch(path, outRequest);
-            } else if (HttpOperation.HEAD == requestAction) {
-                return httpClient.head(path, outRequest);
-            }
-            return getError();
-        }
-    //remove following once we can ignore
-        int | null => io:println("outRequest is null");
+    if (HttpOperation.GET == requestAction) {
+        return httpClient.get(path, outRequest);
+    } else if (HttpOperation.POST == requestAction) {
+        return httpClient.post(path, outRequest);
+    } else if (HttpOperation.OPTIONS == requestAction) {
+        return httpClient.options(path, outRequest);
+    } else if (HttpOperation.PUT == requestAction) {
+        return httpClient.put(path, outRequest);
+    } else if (HttpOperation.DELETE == requestAction) {
+        return httpClient.delete(path, outRequest);
+    } else if (HttpOperation.PATCH == requestAction) {
+        return httpClient.patch(path, outRequest);
+    } else if (HttpOperation.FORWARD == requestAction) {
+        return httpClient.forward(path, outRequest);
+    } else if (HttpOperation.HEAD == requestAction) {
+        return httpClient.head(path, outRequest);
+    } else {
+        return getError();
     }
-
-    match inboundRequest {
-        Request inRequest => {
-            if (HttpOperation.FORWARD == requestAction) {
-                return httpClient.forward(path, inRequest);
-            }
-            return getError();
-        }
-    //remove following once we can ignore
-        int| null => io:println("outRequest is null");
-    }
-
-    return getError();
 }
 
 // Extracts HttpOperation from the Http verb passed in.
@@ -106,13 +90,33 @@ function populateErrorCodeIndex (int[] errorCode) returns boolean[] {
 function createHttpClientArray (ClientEndpointConfiguration config) returns HttpClient[] {
     HttpClient[] httpClients = [];
     int i=0;
+    boolean httpClientRequired = false;
+    string uri = config.targets[0].uri;
+    var cbConfig = config.circuitBreaker;
+    match cbConfig {
+        CircuitBreakerConfig cb => {
+            if (uri.hasSuffix("/")) {
+                int lastIndex = uri.length() - 1;
+                uri = uri.subString(0, lastIndex);
+            }
+            httpClientRequired = false;
+        }
+        int | null => {
+            httpClientRequired = true;
+        }
+    }
+
     foreach target in config.targets {
-        string uri = target.uri;
+        uri = target.uri;
         if (uri.hasSuffix("/")) {
             int lastIndex = uri.length() - 1;
             uri = uri.subString(0, lastIndex);
+        } 
+        if (!httpClientRequired) {
+            httpClients[i] = createCircuitBreakerClient(uri, config);
+        } else {
+            httpClients[i] = createHttpClient(uri, config);
         }
-        httpClients[i] = createHttpClient(uri, config);
         httpClients[i].config = config;
         i = i+1;
     }
