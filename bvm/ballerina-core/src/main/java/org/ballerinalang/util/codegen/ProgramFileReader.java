@@ -1656,6 +1656,10 @@ public class ProgramFileReader {
                     }
                     packageInfo.addInstruction(new InstructionLock(opcode, varTypes, varRegs));
                     break;
+                case InstructionCodes.RECEIVE:
+                    packageInfo.addInstruction(
+                            new Instruction.InstructionRECEIVE(opcode, getArgRegs(codeStream), getArgRegs(codeStream)));
+                    break;
                 default:
                     throw new ProgramFileFormatException("unknown opcode " + opcode +
                             " in package " + packageInfo.getPkgPath());

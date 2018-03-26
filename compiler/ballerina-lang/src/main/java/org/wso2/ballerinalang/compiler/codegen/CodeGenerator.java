@@ -93,6 +93,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangInvocation.BLangTra
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangIsAssignableExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLambdaFunction;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangJSONLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangMapLiteral;
@@ -3310,4 +3311,47 @@ public class CodeGenerator extends BLangNodeVisitor {
         return opcode;
     }
 
+    private Operand[] getReceiveOperands(BLangReceive iExpr) {
+        // call funcRefCPIndex, nArgRegs, argRegs[nArgRegs], nRetRegs, retRegs[nRetRegs]
+        int i = 0;
+        int nArgRegs = 2;
+        int nRetRegs = 1;
+        Operand[] operands = new Operand[nArgRegs + nRetRegs + 2];
+        //        operands[i++] = getOperand(funcRefCPIndex);
+        operands[i++] = getOperand(nArgRegs);
+        operands[i++] = iExpr.messageName.regIndex;
+        operands[i++] = iExpr.correlationMap.regIndex;
+        //        for (BLangExpression argExpr : iExpr.argExprs) {
+        //            operands[i++] = genNode(argExpr, this.env).regIndex;
+        //        }
+
+        operands[i++] = getOperand(nRetRegs);
+        // Calculate registers to store return values
+        RegIndex[] iExprRegIndexes;
+        if (iExpr.getRegIndexes() != null) {
+            iExprRegIndexes = iExpr.getRegIndexes();
+        } else if (iExpr.regIndex != null) {
+            iExprRegIndexes = new RegIndex[nRetRegs];
+            iExprRegIndexes[0] = iExpr.regIndex;
+        } else {
+            iExprRegIndexes = new RegIndex[nRetRegs];
+        }
+
+        for (int j = 0; j < nRetRegs; j++) {
+            RegIndex regIndex = calcAndGetExprRegIndex(iExprRegIndexes[j], iExpr.returnType);
+            iExprRegIndexes[j] = regIndex;
+            operands[i++] = regIndex;
+        }
+
+        iExpr.setRegIndexes(iExprRegIndexes);
+        return operands;
+    }
+
+    public void visit(BLangReceive receiveNode) {
+        genNode(receiveNode.messageName, env);
+        genNode(receiveNode.correlationMap, env);
+        //        emit(InstructionCodes.RECEIVE, receiveNode.messageName.regIndex, receiveNode.correlationMap.regIndex);
+        Operand[] operands = getReceiveOperands(receiveNode);
+        emit(InstructionCodes.RECEIVE, operands);
+    }
 }

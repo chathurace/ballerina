@@ -105,6 +105,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangIndexBasedAccess;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangInvocation;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLambdaFunction;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangVariableReference;
 import org.wso2.ballerinalang.compiler.tree.statements.BLangAbort;
@@ -1611,5 +1612,10 @@ public class SemanticAnalyzer extends BLangNodeVisitor {
         }
 
         return new BUnionType(null, rhsTypeSet, rhsTypeSet.contains(symTable.nullType));
+    }
+
+    public void visit(BLangReceive receiveNode) {
+        typeChecker.checkExpr(receiveNode.messageName, env);
+        typeChecker.checkExpr(receiveNode.correlationMap, env);
     }
 }

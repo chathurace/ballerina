@@ -119,6 +119,7 @@ public enum NodeKind {
     WORKER_RECEIVE,
     WORKER_SEND,
     STREAM,
+    RECEIVE,
 
     /* Types */
     ARRAY_TYPE,

@@ -91,6 +91,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangIsAssignableExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLambdaFunction;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangJSONLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangMapLiteral;
@@ -2076,5 +2077,12 @@ public class Desugar extends BLangNodeVisitor {
         assignmentStmt.addVariable(varRef);
         return assignmentStmt;
     }
+
+    public void visit(BLangReceive receiveNode) {
+               receiveNode.correlationMap = rewriteExpr(receiveNode.correlationMap);
+               receiveNode.messageName = rewriteExpr(receiveNode.messageName);
+                result = receiveNode;
+                // todo: check for improvements
+                    }
 
 }

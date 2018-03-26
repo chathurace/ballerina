@@ -286,5 +286,7 @@ public interface InstructionCodes {
     int TEQ = 253;
     int TNE = 254;
 
-    int INSTRUCTION_CODE_COUNT = 255;
+    int RECEIVE = 255;
+
+    int INSTRUCTION_CODE_COUNT = 256;
 }
