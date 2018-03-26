@@ -747,7 +747,8 @@ public class CPU {
                     break;
                 case InstructionCodes.RECEIVE:
                     Instruction.InstructionRECEIVE instructionReceive = (Instruction.InstructionRECEIVE) instruction;
-                    invokeReceive(instructionReceive.argRegs, instructionReceive.retRegs, ctx);
+                    ctx = invokeReceive(instructionReceive.argRegs, instructionReceive.retRegs, ctx);
+                    handleHalt(ctx);
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -3603,13 +3604,15 @@ public class CPU {
 
     }
 
-    private static void invokeReceive(int[] argRegs, int[] retRegs, WorkerExecutionContext ctx) {
+    private static WorkerExecutionContext invokeReceive(int[] argRegs, int[] retRegs, WorkerExecutionContext ctx) {
         //        BRefType vars =  controlStack.currentFrame.getRefRegs()[argRegs[1]];
         //        controlStack.currentFrame.refRegs[retRegs[0]] = vars;
         String messagename = ctx.workerLocal.stringRegs[argRegs[0]];
         BRefType correlationMap = ctx.workerLocal.refRegs[argRegs[1]];
-//        Persi.persistStack(ctx, messagename, correlationMap, ctx.ip);
+        //        Persi.persistStack(ctx, messagename, correlationMap, ctx.ip);
         ctx.ip = -1;
+        ctx.stop = true;
+        return ctx;
     }
 
 }
