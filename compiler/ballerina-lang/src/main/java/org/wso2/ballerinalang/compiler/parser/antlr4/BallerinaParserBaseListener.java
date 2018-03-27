@@ -184,6 +184,18 @@ public class BallerinaParserBaseListener implements BallerinaParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterLambdaFunction(BallerinaParser.LambdaFunctionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1271,6 +1283,18 @@ public class BallerinaParserBaseListener implements BallerinaParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWorkerReply(BallerinaParser.WorkerReplyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReceiveStatementReference(BallerinaParser.ReceiveStatementReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReceiveStatementReference(BallerinaParser.ReceiveStatementReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -66,6 +66,7 @@ import org.ballerinalang.model.tree.clauses.WhereNode;
 import org.ballerinalang.model.tree.clauses.WindowClauseNode;
 import org.ballerinalang.model.tree.clauses.WithinClause;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
+import org.ballerinalang.model.tree.expressions.ReceiveNode;
 import org.ballerinalang.model.tree.expressions.TableQueryExpression;
 import org.ballerinalang.model.tree.expressions.XMLAttributeNode;
 import org.ballerinalang.model.tree.expressions.XMLLiteralNode;
@@ -132,6 +133,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangInvocation;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLambdaFunction;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangRecordKey;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangRecordKeyValue;
@@ -341,6 +343,8 @@ public class BLangPackageBuilder {
 
     private BLangAnonymousModelHelper anonymousModelHelper;
     private CompilerOptions compilerOptions;
+
+    private Stack<ReceiveNode> receiveNodeStack = new Stack<>();
 
     /**
      * Keep the number of anonymous structs found so far in the current package.
@@ -2975,5 +2979,20 @@ public class BLangPackageBuilder {
         }
 
         addStmtToCurrentBlock(wheneverNode);
+    }
+
+    public void startReceiveStatement() {
+                ReceiveNode receiveNode = (ReceiveNode) TreeBuilder.createReceiveNode();
+                receiveNodeStack.push(receiveNode);
+            }
+
+    public void addReceiveStatement(DiagnosticPos pos, Set<Whitespace> ws) {
+        BLangReceive receiveNode = (BLangReceive) receiveNodeStack.peek();
+        receiveNode.correlationMap = (BLangExpression) exprNodeStack.pop();
+        receiveNode.messageName = (BLangExpression) exprNodeStack.pop();
+        receiveNode.pos = pos;
+        receiveNode.addWS(ws);
+
+        addExpressionNode(receiveNode);
     }
 }

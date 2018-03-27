@@ -2940,4 +2940,20 @@ public class BLangParserListener extends BallerinaParserBaseListener {
         }
         return null;
     }
+
+    @Override
+    public void enterReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) {
+        if (ctx.exception != null) {
+            return;
+        }
+        this.pkgBuilder.startReceiveStatement();
+    }
+
+    @Override
+    public void exitReceiveStatement(BallerinaParser.ReceiveStatementContext ctx) {
+        if (ctx.exception != null) {
+            return;
+        }
+        this.pkgBuilder.addReceiveStatement(getCurrentPos(ctx), getWS(ctx));
+    }
 }

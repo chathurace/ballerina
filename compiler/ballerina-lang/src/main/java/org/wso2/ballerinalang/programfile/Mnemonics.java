@@ -259,6 +259,7 @@ public class Mnemonics {
         mnemonics[InstructionCodes.S2JSONX] = "s2jsonx";
         mnemonics[InstructionCodes.LOCK] = "lock";
         mnemonics[InstructionCodes.UNLOCK] = "unlock";
+        mnemonics[InstructionCodes.RECEIVE] = "receive";
     }
 
     public static String getMnem(int opcode) {

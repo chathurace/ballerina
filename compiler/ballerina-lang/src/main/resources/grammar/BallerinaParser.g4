@@ -80,6 +80,10 @@ functionDefinition
     |   (PUBLIC)? (NATIVE)? FUNCTION Identifier DOUBLE_COLON callableUnitSignature callableUnitBody
     ;
 
+receiveStatement
+    : RECEIVE LEFT_PARENTHESIS expression COMMA expression RIGHT_PARENTHESIS
+    ;
+
 lambdaFunction
     :  FUNCTION LEFT_PARENTHESIS formalParameterList? RIGHT_PARENTHESIS returnParameter? callableUnitBody
     ;
@@ -500,6 +504,7 @@ workerReply
 variableReference
     :   nameReference                                                           # simpleVariableReference
     |   functionInvocation                                                      # functionInvocationReference
+    |   receiveStatement                                                        # receiveStatementReference
     |   awaitExpression                                                         # awaitExpressionReference
     |   variableReference index                                                 # mapArrayVariableReference
     |   variableReference field                                                 # fieldVariableReference

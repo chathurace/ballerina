@@ -73,6 +73,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangInvocation;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLambdaFunction;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangReceive;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangRecordKey;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangRecordKeyValue;
@@ -1673,5 +1674,11 @@ public class TypeChecker extends BLangNodeVisitor {
         if (!samePkg && Symbols.isPrivate(bStructSymbol.initializerFunc.symbol)) {
             dlog.error(pos, DiagnosticCode.ATTEMPT_CREATE_NON_PUBLIC_INITIALIZER);
         }
+    }
+
+    public void visit(BLangReceive bLangReceive) {
+        checkExpr(bLangReceive.correlationMap, env, Lists.of(symTable.jsonType));
+        checkExpr(bLangReceive.messageName, env, Lists.of(symTable.stringType));
+        resultTypes = Lists.of(new BArrayType(symTable.anyType));
     }
 }
