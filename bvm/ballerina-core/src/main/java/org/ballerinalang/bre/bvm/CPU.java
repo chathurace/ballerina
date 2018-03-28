@@ -18,6 +18,7 @@
 package org.ballerinalang.bre.bvm;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.ballerinalang.bre.PersistenceUtils;
 import org.ballerinalang.model.types.BArrayType;
 import org.ballerinalang.model.types.BConnectorType;
 import org.ballerinalang.model.types.BEnumType;
@@ -3609,10 +3610,16 @@ public class CPU {
         //        controlStack.currentFrame.refRegs[retRegs[0]] = vars;
         String messagename = ctx.workerLocal.stringRegs[argRegs[0]];
         BRefType correlationMap = ctx.workerLocal.refRegs[argRegs[1]];
-        //        Persi.persistStack(ctx, messagename, correlationMap, ctx.ip);
+        serializeState(ctx, messagename);
         ctx.ip = -1;
         ctx.stop = true;
         return ctx;
     }
+
+    private static void serializeState(WorkerExecutionContext ctx, String messageName) {
+        String jsonpaylod = PersistenceUtils.getJson(ctx);
+        PersistenceUtils.saveJsonFIle(jsonpaylod, messageName);
+    }
+
 
 }

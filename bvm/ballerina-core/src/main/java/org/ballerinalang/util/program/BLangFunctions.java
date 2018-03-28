@@ -20,6 +20,7 @@ package org.ballerinalang.util.program;
 import org.ballerinalang.bre.BLangCallableUnitCallback;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.NativeCallContext;
+import org.ballerinalang.bre.PersistenceUtils;
 import org.ballerinalang.bre.bvm.AsyncInvocableWorkerResponseContext;
 import org.ballerinalang.bre.bvm.AsyncTimer;
 import org.ballerinalang.bre.bvm.BLangScheduler;
@@ -50,6 +51,8 @@ import org.ballerinalang.util.codegen.attributes.CodeAttributeInfo;
 import org.ballerinalang.util.exceptions.BLangNullReferenceException;
 import org.ballerinalang.util.exceptions.BLangRuntimeException;
 import org.wso2.ballerinalang.util.Lists;
+import org.wso2.carbon.transport.http.netty.listener.SourceHandler;
+import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -351,6 +354,10 @@ public class BLangFunctions {
         WorkerData workerResult = BLangVMUtils.createWorkerData(wdi);
         WorkerExecutionContext ctx = new WorkerExecutionContext(parentCtx, respCtx, callableUnitInfo, workerInfo,
                 workerLocal, workerResult, wdi.retRegs, runInCaller);
+        if (parentCtx.globalProps.get("Correlation") != null) {
+            ctx = PersistenceUtils.reloadContext(ctx, parentCtx.globalProps.get("Correlation").toString());
+        }
+
         BLangScheduler.schedule(ctx);
         return ctx;
     }

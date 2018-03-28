@@ -17,17 +17,21 @@
 */
 package org.ballerinalang.connector.impl;
 
+import org.ballerinalang.bre.PersistenceUtils;
 import org.ballerinalang.bre.bvm.CallableUnitCallback;
 import org.ballerinalang.bre.bvm.WorkerExecutionContext;
 import org.ballerinalang.connector.api.BallerinaConnectorException;
 import org.ballerinalang.connector.api.Resource;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.runtime.Constants;
 import org.ballerinalang.util.codegen.ResourceInfo;
 import org.ballerinalang.util.program.BLangFunctions;
 import org.ballerinalang.util.program.BLangVMUtils;
 import org.ballerinalang.util.transactions.LocalTransactionInfo;
+import org.wso2.transport.http.netty.message.HTTPCarbonMessage;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -63,6 +67,13 @@ public class ResourceExecutor {
             }
         }
         BLangVMUtils.setServiceInfo(context, resourceInfo.getServiceInfo());
+        if (((HTTPCarbonMessage) ((BStruct) (((BStruct) bValues[0]).getRefField(0)))
+                .getNativeData("transport_message")).getHeader("Correlation") != null) {
+            ((HashMap) context.globalProps).put("Correlation", ((HTTPCarbonMessage) ((BStruct) (((BStruct) bValues[0]).getRefField(0)))
+                    .getNativeData("transport_message")).getHeader("Correlation"));
+//            context = PersistenceUtils.reloadContext(context);
+//            context.ip++;
+        }
         BLangFunctions.invokeCallable(resourceInfo, context, bValues, responseCallback);
     }
 }
